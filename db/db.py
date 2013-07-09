@@ -8,9 +8,11 @@ def build_stub_building_obj(row):
     name = row[1]
     return {'id': row[0], 'name': row[1] }
 
+# latitude, longitude converted to strings because the json parser
+# in android does not support getting floats
 def build_full_building_obj(row):
     return {'id': row[0], 'name': row[1], 'architect': row[2], 'country': row[3], 'state': row[4], 'city': row[5], 'region': row[6],
-    'address': row[7], 'latitude': row[8], 'longitude': row[9], 'date': row[10], 'description': row[11], 'keywords': row[12] }
+    'address': row[7], 'latitude': str(row[8]), 'longitude': str(row[9]), 'date': row[10], 'description': row[11], 'keywords': row[12] }
 
 def get_buildings_from_cursor(res, full=True):
     ret = []
