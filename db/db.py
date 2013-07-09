@@ -42,5 +42,5 @@ def get_building_by_id(conn, id):
 
 def get_closest_buildings(conn, latitude, longitude):
 	c = conn.cursor()
-	req = "select * from buildings order by ((latitude-{0})*(latitude-{0}) + (longitude-{1}) * (longitude-{1})) desc limit 50"
+	req = "select * from buildings where latitude != 0 or longitude != 0 order by ((latitude-{0})*(latitude-{0}) + (longitude-{1}) * (longitude-{1})) desc limit 50"
 	return get_buildings_from_cursor(c.execute(req.format(json.dumps(latutide), json.dumps(longitude)))
