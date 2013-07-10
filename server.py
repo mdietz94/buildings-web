@@ -44,7 +44,7 @@ def login():
         if login_info:
             user = User(login_info['id'])
             login_user(user)
-            return redirect("/")
+            return redirect(request.args.get("next"))
         else:
             return abort(401)
     else:
@@ -61,8 +61,10 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        db.add_user(g.db, username, password)
-        return redirect("/login")
+        if db.add_user(g.db, username, password):
+            return redirect("/login")
+        else:
+            return Response('''<p>That username already exists!</p>''')
     else:
         return render_template("register.html")
 
