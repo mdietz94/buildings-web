@@ -74,10 +74,10 @@ class BuildingDetailView extends Backbone.View
 				$("#building-detail").html("""
 				<img class="building-image" src="/static/images/bldg0x0.jpg"></img>
 				<div class="building-name">#{building.get('name')}</div>
-				<div class="building-architect">#{building.get('architect')}</div>
-				<div class="building-location">#{building.get('address')}</div>
-				<div class="building-date">#{building.get('date')}</div>
-				<div class="building-description">#{building.get('description')}</div>
+				<div class="building-architect">#{if building.get('architect') then building.get('architect') else ''}</div>
+				<div class="building-location">#{if building.get('address') then building.get('address') else ''}</div>
+				<div class="building-date">#{if building.get('date') then building.get('date') else ''}</div>
+				<div class="building-description">#{if building.get('description') then building.get('description') else ''}</div>
 				""")
 				$.ajax {
 					type: "HEAD",
