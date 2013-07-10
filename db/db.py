@@ -64,3 +64,11 @@ def get_info(conn, uid):
     row = c.execute("select * from users where id=" + json.dumps(uid)).fetchone()
     if row:
         return { 'id': row[0], 'username': row[1], 'password': row[2] }
+
+def add_user(conn, username, password):
+    c = conn.cursor()
+    c.execute("insert into users (username,password) values({0},{1})".format(json.dumps(username),json.dumps(password)))
+
+def delete_user(conn, uid):
+    c = conn.cursor()
+    c.execute("delete from users where id={0}".format(json.dumps(uid)))
