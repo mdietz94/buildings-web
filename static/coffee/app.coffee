@@ -50,12 +50,19 @@ class BuildingDetailView extends Backbone.View
 		building = Buildings.selection
 		if building
 			$("#building-detail").html("""
+			<img class="building-image" src="/static/images/bldg0x0.jpg"></img>
 			<div class="building-name">#{building.get('name')}</div>
 			<div class="building-architect">#{building.get('architect')}</div>
 			<div class="building-location">#{building.get('address')}</div>
 			<div class="building-date">#{building.get('date')}</div>
 			<div class="building-description">#{building.get('description')}</div>
 			""")
+			$.ajax {
+				type: "GET",
+				url: "/static/images/bldg#{building.get('id')}x0.jpg",
+				success: ->
+					$(".building-image").attr 'src', "/static/images/bldg#{building.get('id')}x0.jpg"
+				}
 
 $ ->
 	navigator.geolocation?.getCurrentPosition (position) ->
