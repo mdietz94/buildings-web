@@ -4,9 +4,7 @@ def connect_db():
     return sqlite3.connect('db/buildings.db')
 
 def build_stub_building_obj(row):
-    uid = row[0]
-    name = row[1]
-    return {'id': row[0], 'name': row[1] }
+    return {'id': row[0], 'name': row[1], 'architect': row[2] }
 
 # latitude, longitude converted to strings because the json parser
 # in android does not support getting floats
