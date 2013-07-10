@@ -44,12 +44,23 @@ def check_login(conn, username, password):
     row = c.execute(req.format(json.dumps(username),json.dumps(password))).fetchone()
     if row:
         return { 'id': row[0], 'username': row[1], 'password': row[2] }
-    else:
-        return None
+
+def update_building(conn, architect, description, id):
+    c = conn.cursor()
+    req = "update buildings set architect={0},description={1} where _id={3}"
+    c.execute(req.format(json.dumps(architect), json.dumps(description), json.dumps(id)))
+
+def add_building(conn, name, architect, country, state, city, region, address, latitude, longitude, date, description, keywords):
+    c = conn.cursor()
+    req = "insert into buildings (name, architect, country, state, city, region, address, latitude, longitude, date, description, keywords) values ({0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11})"
+    keywords = ";".join(keywords.split()) # any whitespace should just be made into separate tags
+    c.execute(req.format(json.dumps(name),json.dumps(architect),json.dumps(country),json.dumps(state),json.dumps(city),json.dumps(region),json.dumps(address),json.dumps(latitude),json.dumps(longitude),json.dumps(date),json.dumps(description),json.dumps(keywords)))
+
+def delete_building(conn, id):
+    c.execute("delete from buildings where _id={0}".format(json.dumps(id)))
 
 def get_info(conn, uid):
     c = conn.cursor()
-    row = c.execute("select * from users where id=" + str(uid)).fetchone()
+    row = c.execute("select * from users where id=" + json.dumps(uid)).fetchone()
     if row:
         return { 'id': row[0], 'username': row[1], 'password': row[2] }
-    return None
