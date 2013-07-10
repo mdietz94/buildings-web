@@ -51,7 +51,7 @@ class BuildingsView extends Backbone.View
 			buildingList.append("""
 			<li id=#{building.get('id')} class="building-list-item">
 				<div class="building-list-item-name">#{building.get('name')}</div>
-				<div class="building-list-item-architect">#{building.get('architect')}</div>
+				<div class="building-list-item-address">#{building.get('address')}</div>
 			</li>
 			""")
 		$(".building-list-item").click actionItemClicked
@@ -68,21 +68,22 @@ class BuildingDetailView extends Backbone.View
 		Buildings.bind 'change:selection', this.render
 
 	render: ->
-		building = Buildings.selection
-		if building
-			$("#building-detail").html("""
-			<img class="building-image" src="/static/images/bldg0x0.jpg"></img>
-			<div class="building-name">#{building.get('name')}</div>
-			<div class="building-architect">#{building.get('architect')}</div>
-			<div class="building-location">#{building.get('address')}</div>
-			<div class="building-date">#{building.get('date')}</div>
-			<div class="building-description">#{building.get('description')}</div>
-			""")
-			$.ajax {
-				type: "HEAD",
-				url: "/static/images/bldg#{building.get('id')}x0.jpg",
-				success: ->
-					$(".building-image").attr 'src', "/static/images/bldg#{building.get('id')}x0.jpg"
+		$.getJSON "/find-by-id/#{Buildings.selection.get('id')}", (response) ->
+			building = new Building(response)
+			if building
+				$("#building-detail").html("""
+				<img class="building-image" src="/static/images/bldg0x0.jpg"></img>
+				<div class="building-name">#{building.get('name')}</div>
+				<div class="building-architect">#{building.get('architect')}</div>
+				<div class="building-location">#{building.get('address')}</div>
+				<div class="building-date">#{building.get('date')}</div>
+				<div class="building-description">#{building.get('description')}</div>
+				""")
+				$.ajax {
+					type: "HEAD",
+					url: "/static/images/bldg#{building.get('id')}x0.jpg",
+					success: ->
+						$(".building-image").attr 'src', "/static/images/bldg#{building.get('id')}x0.jpg"
 				}
 
 $ ->
