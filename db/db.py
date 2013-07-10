@@ -29,7 +29,7 @@ def get_all_buildings(conn):
 
 def get_buildings_by_name(conn, name):
     c = conn.cursor()
-    return get_buildings_from_cursor(c.execute("select * from buildings where upper(name) like '%" + name.upper()  + "%'" ), False)
+    return get_buildings_from_cursor(c.execute("select * from buildings where upper(name) like '%" + name.upper()  + "%' limit 200" ), False)
 
 def get_building_by_id(conn, id):
     c = conn.cursor()
