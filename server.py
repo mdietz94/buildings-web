@@ -44,23 +44,27 @@ def login():
         if login_info:
             user = User(login_info['id'])
             login_user(user)
-            return redirect(request.args.get("next"))
+            return redirect("/")
         else:
             return abort(401)
     else:
-        return Response('''
-        <form action="" method="post">
-            <p><input type=text name=username>
-            <p><input type=password name=password>
-            <p><input type=submit value=Login>
-        </form>
-        ''')
+        return render_template("login.html")
 
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
     return Response('''<p>You have been logged out!''')
+
+@app.route("/register", methods=["GET","POST"])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        db.add_user(g.db, username, password)
+        return redirect("/login")
+    else:
+        return render_template("register.html")
 
 # handle login failed
 @app.errorhandler(401)

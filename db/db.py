@@ -55,9 +55,11 @@ def add_building(conn, name, architect, country, state, city, region, address, l
     req = "insert into buildings (name, architect, country, state, city, region, address, latitude, longitude, date, description, keywords) values ({0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11})"
     keywords = ";".join(keywords.split()) # any whitespace should just be made into separate tags
     c.execute(req.format(json.dumps(name),json.dumps(architect),json.dumps(country),json.dumps(state),json.dumps(city),json.dumps(region),json.dumps(address),json.dumps(latitude),json.dumps(longitude),json.dumps(date),json.dumps(description),json.dumps(keywords)))
+    conn.commit()
 
 def delete_building(conn, id):
     c.execute("delete from buildings where _id={0}".format(json.dumps(id)))
+    conn.commit()
 
 def get_info(conn, uid):
     c = conn.cursor()
@@ -68,7 +70,9 @@ def get_info(conn, uid):
 def add_user(conn, username, password):
     c = conn.cursor()
     c.execute("insert into users (username,password) values({0},{1})".format(json.dumps(username),json.dumps(password)))
+    conn.commit()
 
 def delete_user(conn, uid):
     c = conn.cursor()
     c.execute("delete from users where id={0}".format(json.dumps(uid)))
+    conn.commit()
