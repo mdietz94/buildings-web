@@ -51,7 +51,7 @@ class BuildingsView extends Backbone.View
 			buildingList.append("""
 			<li id=#{building.get('id')} class="building-list-item">
 				<div class="building-list-item-name">#{building.get('name')}</div>
-				<div class="building-list-item-address">#{building.get('address')}</div>
+				<div class="building-list-item-architect">#{if building.get('architect') then building.get('architect') else ''}</div>
 			</li>
 			""")
 		$(".building-list-item").click actionItemClicked
@@ -72,10 +72,13 @@ class BuildingDetailView extends Backbone.View
 			building = new Building(response)
 			if building
 				$("#building-detail").html("""
-				<img class="building-image" src="/static/images/bldg0x0.jpg"></img>
 				<div class="building-name">#{building.get('name')}</div>
+				<img class="building-image" src="/static/images/bldg0x0.jpg"></img>
 				<div class="building-architect">#{if building.get('architect') then building.get('architect') else ''}</div>
 				<div class="building-location">#{if building.get('address') then building.get('address') else ''}</div>
+				<div class="building-location">#{if building.get('region') then building.get('region') else ''}</div>
+				<div class="building-location">#{if building.get('city') then building.get('city') else ''}</div>
+				<div class="building-location">#{if building.get('state') then building.get('state') else ''}</div>
 				<div class="building-date">#{if building.get('date') then building.get('date') else ''}</div>
 				<div class="building-description">#{if building.get('description') then building.get('description') else ''}</div>
 				""")
