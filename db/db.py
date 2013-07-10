@@ -37,3 +37,19 @@ def get_closest_buildings(conn, latitude, longitude):
     c = conn.cursor()
     req = "select * from buildings where (latitude != 0 or longitude != 0) and length(description) order by ((latitude-{0})*(latitude-{0}) + (longitude-{1}) * (longitude-{1})) desc limit 200"
     return get_buildings_from_cursor(c.execute(req.format(json.dumps(latitude), json.dumps(longitude))))
+
+def check_login(conn, username, password):
+    c = conn.cursor()
+    req = "select * from users where username={0} and password={1}"
+    row = c.execute(req.format(json.dumps(username),json.dumps(password))).fetchone()
+    if row:
+        return { 'id': row[0], 'username': row[1], 'password': row[2] }
+    else:
+        return None
+
+def get_info(conn, uid):
+    c = conn.cursor()
+    row = c.execute("select * from users where id=" + str(uid)).fetchone()
+    if row:
+        return { 'id': row[0], 'username': row[1], 'password': row[2] }
+    return None
