@@ -29,7 +29,7 @@ def get_all_buildings(conn):
 
 def get_buildings_by_name(conn, name):
     c = conn.cursor()
-    return get_buildings_from_cursor(c.execute("select * from buildings where upper(name) like '%" + name.upper()  + "%' limit 200" ), False)
+    return get_buildings_from_cursor(c.execute("select * from buildings where upper(name) like '%" + name.upper()  + "%' order by length(description) desc limit 200" ), False)
 
 def get_building_by_id(conn, id):
     c = conn.cursor()
@@ -37,5 +37,5 @@ def get_building_by_id(conn, id):
 
 def get_closest_buildings(conn, latitude, longitude):
     c = conn.cursor()
-    req = "select * from buildings where latitude != 0 or longitude != 0 order by ((latitude-{0})*(latitude-{0}) + (longitude-{1}) * (longitude-{1})) desc limit 50"
+    req = "select * from buildings where (latitude != 0 or longitude != 0) and length(description) order by ((latitude-{0})*(latitude-{0}) + (longitude-{1}) * (longitude-{1})) desc limit 200"
     return get_buildings_from_cursor(c.execute(req.format(json.dumps(latitude), json.dumps(longitude))))
