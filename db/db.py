@@ -1,5 +1,7 @@
 import sqlite3
 import json
+import hashlib
+
 def connect_db():
     return sqlite3.connect('db/buildings.db')
 
@@ -40,8 +42,10 @@ def get_closest_buildings(conn, latitude, longitude):
 
 def check_login(conn, username, password):
     c = conn.cursor()
+    m = hashlib.md5()
+    m.update(bytes("MRD" + password,'utf-8'))
     req = "select * from users where username={0} and password={1}"
-    row = c.execute(req.format(json.dumps(username),json.dumps(password))).fetchone()
+    row = c.execute(req.format(json.dumps(username),json.dumps(m.hexdigest()))).fetchone()
     if row:
         return { 'id': row[0], 'username': row[1], 'password': row[2] }
 
@@ -69,7 +73,9 @@ def get_info(conn, uid):
 
 def add_user(conn, username, password):
     c = conn.cursor()
-    c.execute("insert into users (username,password) values({0},{1})".format(json.dumps(username),json.dumps(password)))
+    m = hashlib.md5()
+    m.update(bytes("MRD" + password,'utf-8'))
+    c.execute("insert into users (username,password) values({0},{1})".format(json.dumps(username),json.dumps(m.hexdigest())))
     conn.commit()
 
 def delete_user(conn, uid):
