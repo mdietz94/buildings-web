@@ -62,7 +62,7 @@ def register():
         username = request.form['username']
         password = request.form['password']
         if len(password) < 8:
-            return Response('''<p>You password must be at least 8 characters long!</p>''')
+            return Response('''<p>Your password must be at least 8 characters long!</p>''')
         if db.add_user(g.db, username, password):
             return redirect("/login")
         else:
