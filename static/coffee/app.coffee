@@ -20,7 +20,7 @@ class BuildingsView extends Backbone.View
 	initialize: ->
 		Buildings.bind 'add', this.render
 		Buildings.bind 'change', this.render
-		Buildings.bind 'change:selection', this.render
+		Buildings.bind 'change:selection', this.selectionChanged
 		this.render()
 
 	render: ->
@@ -33,6 +33,7 @@ class BuildingsView extends Backbone.View
 				<div class="building-list-item-architect">#{building.get('architect')}</div>
 			</li>
 			""")
+		$(".building-list-item").click actionItemClicked
 
 	actionItemClicked = (event) ->
 		Buildings.select(event.currentTarget.id)
@@ -47,7 +48,6 @@ class BuildingDetailView extends Backbone.View
 
 	render: ->
 		building = Buildings.selection
-		$("#building-detail").html ''
 		if building
 			$("#building-detail").html("""
 			<div class="building-name">#{building.get('name')}</div>
@@ -65,6 +65,6 @@ $ ->
 		lat = '40.7142'
 		long = '-74.0064' # nyc is default coordinates
 	$.getJSON "/find-by-location/#{lat}/#{long}", (response) ->
-		Buildings.add(response.map (b) -> new Building(b))
+		Buildings.add(response)
 	new BuildingsView
 	new BuildingDetailView
