@@ -52,14 +52,13 @@ li:nth-child(odd):not(.selected)
 li:nth-child(even):not(.selected)
 	background-color: #4B5ED7
 
-
 .selected
 	background-color: #2E3983
 	left: 80px
 	img
-		-webkit-transition-duration: 0.5s
+		-webkit-transition-duration: 2s
 		-webkit-transition-property: -webkit-transform, opacity
-		-webkit-transition-delay: 0.25s
+		-webkit-transition-delay: none
 		opacity: 1
 		position: relative
 		display: inline
@@ -68,7 +67,7 @@ li:nth-child(even):not(.selected)
 		margin-right: 5px
 		&:hover
 			-webkit-transition-delay: 0s
-			-webkit-transform: rotate(180deg)
+			-webkit-transform: rotate(360deg)
 		&:active
 			-webkit-transition-duration: 0.25s
 			-webkit-transform: rotate(0deg)
