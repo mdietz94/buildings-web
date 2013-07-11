@@ -63,7 +63,10 @@ def logout():
 @app.route("/edit", methods=['POST'])
 @login_required
 def edit_building():
-    return simplejson.dumps(db.update_building(g.db, request.form['architect'], request.form['description'], request.form['id']))
+    if current_user.get_access() > 0:
+        db.update_building(g.db, request.form['architect'], request.form['description'], request.form['id'])
+        return simplejson.dumps({'message': 'OK'})
+    return simplejson.dumps({'message': 'Inadequate permissions'})
 
 @app.route("/register", methods=["POST"])
 def register():

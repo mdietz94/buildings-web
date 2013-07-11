@@ -69,7 +69,7 @@ def get_info(conn, uid):
     c = conn.cursor()
     row = c.execute("select * from users where id=" + json.dumps(uid)).fetchone()
     if row:
-        return { 'id': row[0], 'username': row[1], 'password': row[2] }
+        return { 'id': row[0], 'username': row[1], 'password': row[2], 'access_level': row[3] }
 
 def add_user(conn, username, password):
     c = conn.cursor()
@@ -78,7 +78,7 @@ def add_user(conn, username, password):
         return None
     m = hashlib.md5()
     m.update(bytes("MRD" + password,'utf-8'))
-    c.execute("insert into users (username,password) values({0},{1})".format(json.dumps(username),json.dumps(m.hexdigest())))
+    c.execute("insert into users (username,password) values({0},{1},0)".format(json.dumps(username),json.dumps(m.hexdigest())))
     conn.commit()
     return c.execute("select id from users where username={0}".format(json.dumps(username))).fetchone()[0]
 
