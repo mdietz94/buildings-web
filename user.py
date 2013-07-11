@@ -15,3 +15,6 @@ class User(UserMixin):
 
     def get_name(self):
     	return self.name
+
+    def get_access(self):
+    	return self.access_level

@@ -64,7 +64,8 @@ def logout():
 @login_required
 def edit_building():
     if current_user.get_access() > 0:
-        db.update_building(g.db, request.form['architect'], request.form['description'], request.form['id'])
+        db.update_building(g.db, request.form['architect'], request.form['description'],
+            request.form['name'], request.form['date'], request.form['id'])
         return simplejson.dumps({'message': 'OK'})
     return simplejson.dumps({'message': 'Inadequate permissions'})
 

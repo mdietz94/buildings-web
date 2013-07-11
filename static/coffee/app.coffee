@@ -69,9 +69,10 @@ class BuildingDetailView extends Backbone.View
 
 	render: ->
 		$.getJSON "/find-by-id/#{Buildings.selection.get('id')}", (response) ->
-			building = new Building(response)
+			this.building = building = new Building(response)
 			if building
 				$("#building-detail").html("""
+				<div style="display: none;" class="building-id">#{building.get('id')}</div>
 				<div class="building-name">#{building.get('name')}</div>
 				<img class="building-image" src="/static/images/bldg0x0.jpg"></img>
 				<div class="building-architect">#{if building.get('architect') then building.get('architect') else ''}</div>
@@ -81,13 +82,43 @@ class BuildingDetailView extends Backbone.View
 				<div class="building-location">#{if building.get('state') then building.get('state') else ''}</div>
 				<div class="building-date">#{if building.get('date') then building.get('date') else ''}</div>
 				<div class="building-description">#{if building.get('description') then building.get('description') else ''}</div>
+				<input id="edit-button" type='submit' value='Edit'></input>
 				""")
+				$("#edit-button").bind 'click', BuildingDetailView.prototype.enableEditing
+
 				$.ajax {
 					type: "HEAD",
 					url: "/static/images/bldg#{building.get('id')}x0.jpg",
 					success: ->
 						$(".building-image").attr 'src', "/static/images/bldg#{building.get('id')}x0.jpg"
 				}
+
+	enableEditing: ->
+		replaceEl(".building-description")
+		replaceEl(".building-name")
+		replaceEl(".building-architect", 'Architect')
+		replaceEl(".building-date", 'Date')
+		$("#edit-button").unbind 'click'
+		$("#edit-button").val 'Save'
+		$("#edit-button").click ->
+			building = { id: $(".building-id").text(), name: $(".building-name").val(), architect: $(".building-architect").val(), 
+			description: $(".building-description").val(), date: $(".building-date").val() }
+			console.log building
+			$.ajax {
+				type: "POST",
+				url: "/edit",
+				data: building,
+				success: ->
+					Buildings.trigger 'change:selection'
+				}
+
+replaceEl = (selector, placeholder='') ->
+	el = $(selector)
+	data = el.text()
+	savedClass = el.attr 'class'
+	el.replaceWith "<textarea class='#{savedClass}' placeholder='#{placeholder}'></textarea>"
+	$(".#{savedClass}").html data
+
 
 logout = ->
 	$.ajax {

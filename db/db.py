@@ -49,10 +49,11 @@ def check_login(conn, username, password):
     if row:
         return { 'id': row[0], 'username': row[1], 'password': row[2] }
 
-def update_building(conn, architect, description, id):
+def update_building(conn, architect, description, name, date, id):
     c = conn.cursor()
-    req = "update buildings set architect={0},description={1} where _id={3}"
-    c.execute(req.format(json.dumps(architect), json.dumps(description), json.dumps(id)))
+    req = "update buildings set architect={0},description={1},name={2},date={3} where _id={4}"
+    c.execute(req.format(json.dumps(architect), json.dumps(description), json.dumps(name), json.dumps(date),json.dumps(id)))
+    conn.commit()
 
 def add_building(conn, name, architect, country, state, city, region, address, latitude, longitude, date, description, keywords):
     c = conn.cursor()
