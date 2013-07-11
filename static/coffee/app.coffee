@@ -83,6 +83,7 @@ class BuildingDetailView extends Backbone.View
 				<div class="building-date">#{if building.get('date') then building.get('date') else ''}</div>
 				<div class="building-description">#{if building.get('description') then building.get('description') else ''}</div>
 				<input id="edit-button" type='submit' value='Edit'></input>
+				<input style='display: none;' id="cancel-button" type='submit' value='Cancel'></input>
 				""")
 				$("#edit-button").bind 'click', BuildingDetailView.prototype.enableEditing
 
@@ -98,6 +99,9 @@ class BuildingDetailView extends Backbone.View
 		replaceEl(".building-name")
 		replaceEl(".building-architect", 'Architect')
 		replaceEl(".building-date", 'Date')
+		$("#cancel-button").show()
+		$("#cancel-button").click ->
+			Buildings.trigger('change:selection')
 		$("#edit-button").unbind 'click'
 		$("#edit-button").val 'Save'
 		$("#edit-button").click ->
