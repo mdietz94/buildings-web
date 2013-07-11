@@ -48,11 +48,11 @@ def login():
         if login_info:
             user = User(login_info['id'])
             login_user(user)
-            return redirect(request.args.get("next") or "/")
+            return simplejson.dumps({'message': 'OK'})
         else:
             return abort(401)
     else:
-        return render_template("login.html")
+        return abort(401)
 
 @app.route("/logout")
 @login_required
@@ -60,24 +60,22 @@ def logout():
     logout_user()
     return Response('''<p>You have been logged out!''')
 
-@app.route("/register", methods=["GET","POST"])
-def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        if len(password) < 8:
-            return Response('''<p>Your password must be at least 8 characters long!</p>''')
-        if db.add_user(g.db, username, password):
-            return redirect("/login")
-        else:
-            return Response('''<p>That username already exists!</p>''')
-    else:
-        return render_template("register.html")
+@app.route("/edit", methods=['POST'])
+@login_required
+def edit_building():
+    return simplejson.dumps(db.update_building(g.db, request.form['architect'], request.form['description'], request.form['id']))
 
-# handle login failed
-@app.errorhandler(401)
-def page_not_found(e):
-    return Response('<p>Login failed</p>')
+@app.route("/register", methods=["POST"])
+def register():
+    username = request.form['username']
+    password = request.form['password']
+    if len(password) < 8:
+        return simplejson.dumps({ 'message': 'Your password must be at least 8 characters long!'})
+    uid = db.add_user(g.db, username, password)
+    if uid:
+        login_user(User(uid))
+        return simplejson.dumps({ 'message': 'OK'})
+    return simplejson.dumps({ 'message': 'Username already exists!'})
 
 # callback to relaad the user object        
 @login_manager.user_loader
