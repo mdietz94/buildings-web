@@ -94,8 +94,6 @@ logout = ->
 		type: "GET",
 		url: "/logout",
 		success: ->
-			$("#login-info a").click ->
-				$("#login-form").show()
 			refreshUserInfo()
 	}
 
@@ -113,16 +111,37 @@ login = ->
 			console.log e
 	}
 
+register = ->
+	$.ajax {
+		type: "POST",
+		url: "/register",
+		data: { username: $("#login-form-username").val(), password: $("#login-form-password").val() },
+		dataType: 'json'
+		success: (response) ->
+			$("#login-form").hide()
+			if response.message != 'OK'
+				alert(response.message)
+			refreshUserInfo()
+		error: (e) ->
+			$("#login-form").hide()
+			alert("There was an error registering!")
+			console.log e
+	}	
+
 refreshUserInfo = ->
 	$.getJSON "/username", (response) ->
 		username = response['username']
 		if username
+			console.log 'user logged in'
 			$("#login-info p").text "Welcome #{username}!"
 			$("#login-info a").text 'Logout'
+			$("#login-info a").unbind 'click'
 			$("#login-info a").click logout
 		else
+			console.log 'user logged out'
 			$("#login-info p").text ''
 			$("#login-info a").text 'Login'
+			$("#login-info a").unbind 'click'
 			$("#login-info a").click ->
 				$("#login-form").show()
 
@@ -137,4 +156,5 @@ $ ->
 
 	$("#login-form").hide()
 	$("#login-form-submit").click login
+	$("#login-form-register").click register
 	refreshUserInfo()
