@@ -8,6 +8,12 @@
 	overflow-x: hidden
 	padding: 0px 0px 0px 1px
 	margin: 0px
+	-webkit-touch-callout: none
+	-webkit-user-select: none
+	-khtml-user-select: none
+	-moz-user-select: moz-none
+	-ms-user-select: none
+	user-select: none
 
 .building-list-item
 	list-style-type: none
@@ -76,11 +82,21 @@
 	padding: 0px
 	font-family: serif
 	font-size: 10px
+	background: #ffffff /* Old browsers */
+	background: -moz-linear-gradient(top, #ffffff 0%, #e5e5e5 100%) /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#e5e5e5)) /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #ffffff 0%,#e5e5e5 100%) /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #ffffff 0%,#e5e5e5 100%) /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #ffffff 0%,#e5e5e5 100%) /* IE10+ */
+	background: linear-gradient(to bottom, #ffffff 0%,#e5e5e5 100%) /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5',GradientType=0 ) /* IE6-9 */
 	h1
 		display: inline
 
 #login-info
-	float: right
+	position: absolute
+	right: 20px
+	top: 10px
 	margin: 20px
 	p
 		display: inline
@@ -109,3 +125,38 @@
 	height: 200px
 	background-color: white
 	border-radius: 2px
+
+#add-building
+	cursor: hand
+	cursor: pointer
+	position: relative
+	top: 10px
+	height: 30px
+
+.tooltip
+	.arrow-up
+		position: inherit
+		top: 3px
+		right: 19px
+		padding: 0px
+		border-radius: 0px
+		background-color: transparent
+		width: 0
+		height: 0
+		border-left: 5px solid transparent
+		border-right: 5px solid transparent
+		border-bottom: 5px solid black
+	span
+		position: inherit
+		color: white
+		top: 25px
+		right: 58px
+		height: 20px
+		width: 40px
+		opacity: .8
+		background-color: black
+		border-radius: 3px
+		display: none
+		padding: 5px
+	&:hover span
+		display: inline
