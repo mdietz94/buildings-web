@@ -31,8 +31,16 @@ def find_by_name(name):
     return simplejson.dumps(db.get_buildings_by_name(g.db, name))
 
 @app.route("/find-by-id/<id>")
-def find_by_id(id):
-    return simplejson.dumps(db.get_building_by_id(g.db, id))
+def find_by_id(id, methods=['GET','DELETE']):
+    if request.method == 'GET':
+        return simplejson.dumps(db.get_building_by_id(g.db, id))
+    elif request.method == 'DELETE':
+        if current_user.get_id() and current_user.get_access() > 0:
+            db.delete_building(g.db, uid)
+            return simplejson.dumps({'message': 'OK'})
+        else:
+            return simplejson.dumps({'message': 'Inadequate permissions'})
+
 
 @app.route("/find-by-location/<latitude>/<longitude>")
 def find_by_location(latitude, longitude):
@@ -66,6 +74,16 @@ def edit_building():
     if current_user.get_access() > 0:
         db.update_building(g.db, request.form['architect'], request.form['description'],
             request.form['name'], request.form['date'], request.form['id'])
+        return simplejson.dumps({'message': 'OK'})
+    return simplejson.dumps({'message': 'Inadequate permissions'})
+
+@app.route("/add", methods=['POST'])
+@login_required
+def add_building():
+    if current_user.get_access() > 0:
+        db.add_building(g.db, request.form['name'], request.form['architect'], request.form['country'],
+            request.form['state'], request.form['city'], request.form['region'], request.form['address'],
+            request.form['latitude'], request.form['longitude'], request.form['date'], request.form['description'], request.form['keywords'])
         return simplejson.dumps({'message': 'OK'})
     return simplejson.dumps({'message': 'Inadequate permissions'})
 
