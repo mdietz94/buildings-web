@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify, g, session, app, Response, redirect, abort
-from flask.ext.login import LoginManager, login_required, login_user, logout_user 
+from flask.ext.login import LoginManager, login_required, login_user, logout_user, current_user 
 
 
 import simplejson
@@ -19,9 +19,12 @@ def before_request():
     g.db = db.connect_db()
 
 @app.route("/")
-@login_required
-def hello():
+def index():
     return render_template("index.html")
+
+@app.route("/username")
+def username():
+    return simplejson.dumps({ 'username': (current_user.get_name() if current_user.get_id() else '') })
 
 @app.route("/find-by-name/<name>")
 def find_by_name(name):
@@ -39,12 +42,13 @@ def find_by_location(latitude, longitude):
 def login():
     if request.method == 'POST':
         username = request.form['username']
-        password = request.form['password']        
+        password = request.form['password']
+        print("username: {0}".format(username))        
         login_info = db.check_login(g.db, username, password)
         if login_info:
             user = User(login_info['id'])
             login_user(user)
-            return redirect(request.args.get("next"))
+            return redirect(request.args.get("next") or "/")
         else:
             return abort(401)
     else:

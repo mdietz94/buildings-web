@@ -12,8 +12,17 @@
 		<link rel="stylesheet" type="text/css" href="/static/css/styles.css"></link>
 	</head>
 	<body>
-		<div id="header">bldg</div>
-		<input type="text" id="search-bar" placeholder="Search here..."></input>
+		<div id="login-form">
+        	<input id="login-form-username" type='text' name='username'></input><br />
+            <input id="login-form-password" type='password' name='password'></input><br />
+            <input id="login-form-submit" type='submit' value='Login'></input>
+            <a href="/register">Click here to register a new account</a>
+        </div>
+		<div id="header">
+			<h1>bldg</h1>
+			<input type="text" id="search-bar" placeholder="Search here..."></input>
+			<div id="login-info"><p></p><a href="#">Login</a></div>
+		</div>
 		<ul id="building-list">
 		</ul>
 		<div id="building-detail"></div>

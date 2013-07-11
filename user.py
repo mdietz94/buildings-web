@@ -11,3 +11,6 @@ class User(UserMixin):
         
     def __repr__(self):
         return "%d/%s/%s" % (self.id, self.name, self.password)
+
+    def get_name(self):
+    	return self.name

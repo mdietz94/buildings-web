@@ -89,11 +89,52 @@ class BuildingDetailView extends Backbone.View
 						$(".building-image").attr 'src', "/static/images/bldg#{building.get('id')}x0.jpg"
 				}
 
+logout = ->
+	$.ajax {
+		type: "GET",
+		url: "/logout",
+		success: ->
+			$("#login-info a").click ->
+				$("#login-form").show()
+			refreshUserInfo()
+	}
+
+login = ->
+	$.ajax {
+		type: "POST",
+		url: "/login",
+		data: { username: $("#login-form-username").val(), password: $("#login-form-password").val() },
+		success: ->
+			$("#login-form").hide()
+			refreshUserInfo()
+		error: (e) ->
+			$("#login-form").hide()
+			alert("There was an error logging in!")
+			console.log e
+	}
+
+refreshUserInfo = ->
+	$.getJSON "/username", (response) ->
+		username = response['username']
+		if username
+			$("#login-info p").text "Welcome #{username}!"
+			$("#login-info a").text 'Logout'
+			$("#login-info a").click logout
+		else
+			$("#login-info p").text ''
+			$("#login-info a").text 'Login'
+			$("#login-info a").click ->
+				$("#login-form").show()
+
 $ ->
 	Buildings.refresh()
+	new BuildingsView
+	new BuildingDetailView
+
 	$("#search-bar").keyup (e) ->
 		Buildings.selectionType = "text"
 		Buildings.refresh()
 
-	new BuildingsView
-	new BuildingDetailView
+	$("#login-form").hide()
+	$("#login-form-submit").click login
+	refreshUserInfo()
