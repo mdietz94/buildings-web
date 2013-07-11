@@ -52,9 +52,12 @@ class BuildingsView extends Backbone.View
 			<li id=#{building.get('id')} class="building-list-item">
 				<div class="building-list-item-name">#{building.get('name')}</div>
 				<div class="building-list-item-architect">#{if building.get('architect') then building.get('architect') else ''}</div>
+				<img src="/static/images/pencil.png" height="70px" ></img>
 			</li>
 			""")
-		$(".building-list-item").click actionItemClicked
+		$(".building-list-item").click (e) ->
+			if e.target != $(".selected img")[0] 
+				actionItemClicked(e)
 
 	actionItemClicked = (event) ->
 		Buildings.select(event.currentTarget.id)
@@ -62,6 +65,8 @@ class BuildingsView extends Backbone.View
 	selectionChanged: ->
 		$(".building-list-item").removeClass 'selected'
 		$("#" + Buildings.selection?.id).addClass 'selected'
+		$(".building-list-item img").unbind 'click'
+		$(".selected img").bind 'click', BuildingDetailView.prototype.enableEditing
 
 class BuildingDetailView extends Backbone.View
 	initialize: ->
@@ -82,11 +87,9 @@ class BuildingDetailView extends Backbone.View
 				<div class="building-state">#{if building.get('state') then building.get('state') else ''}</div>
 				<div class="building-date">#{if building.get('date') then building.get('date') else ''}</div>
 				<div class="building-description">#{if building.get('description') then building.get('description') else ''}</div>
-				<input id="edit-button" type='submit' value='Edit'></input>
 				<input id="delete-button" type='submit' value='Delete'></input>
 				<input style='display: none;' id="cancel-button" type='submit' value='Cancel'></input>
 				""")
-				$("#edit-button").bind 'click', BuildingDetailView.prototype.enableEditing
 				$("#delete-button").bind 'click', BuildingDetailView.prototype.deleteBuilding
 				$.ajax {
 					type: "HEAD",

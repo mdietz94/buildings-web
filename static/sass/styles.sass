@@ -8,6 +8,7 @@
 	overflow-x: hidden
 	padding: 0px 0px 0px 1px
 	margin: 0px
+	margin-top: 10px
 	-webkit-touch-callout: none
 	-webkit-user-select: none
 	-khtml-user-select: none
@@ -18,21 +19,59 @@
 .building-list-item
 	list-style-type: none
 	font-family: 'Open Sans', sans-serif
-	border-top: 1px solid black
-	border-left: 1px solid black
 	position: relative
-	height: 50px
-	background: rgba(220,220,220,.8)
-	color: #111
-	box-shadow: 0px 2px 5px #000
+	height: 30px
+	left: 10px
+	text-align: center
+	padding: 20px
+	width: 340px
+	color: #fff
+	border-radius: 2px
+	margin-bottom: 5px
+	-webkit-transition: 0.5s ease-out all
 	.building-list-item-name
+		font-size: 20px
+		white-space: nowrap
+		text-overflow: ellipsis
+		display: block
+		overflow: hidden
 	.building-list-item-architect
 		mergin-left: 4px
 		font-style: italic
 		font-size: 14px
+	&:hover:not(.selected)
+		opacity: .8
+	img
+		opacity: 0
+		-webkit-transition: none
+		
+
+li:nth-child(odd):not(.selected)
+	background-color: #172CAF
+
+li:nth-child(even):not(.selected)
+	background-color: #4B5ED7
+
 
 .selected
-	background-color: rgba(255,255,255,0.4)
+	background-color: #2E3983
+	left: 80px
+	img
+		-webkit-transition-duration: 0.5s
+		-webkit-transition-property: -webkit-transform, opacity
+		-webkit-transition-delay: 0.25s
+		opacity: 1
+		position: relative
+		display: inline
+		left: -220px
+		top: -50px
+		margin-right: 5px
+		&:hover
+			-webkit-transition-delay: 0s
+			-webkit-transform: rotate(180deg)
+		&:active
+			-webkit-transition-duration: 0.25s
+			-webkit-transform: rotate(0deg)
 
 #building-detail
 	position: absolute
@@ -51,6 +90,7 @@
 	.building-description
 		text-align: justify
 		padding: 30px
+		line-height: 1.4em
 		font-size: 19px
 	.building-image
 		padding: 5px
@@ -91,6 +131,10 @@
 	background: linear-gradient(to bottom, #ffffff 0%,#e5e5e5 100%) /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5',GradientType=0 ) /* IE6-9 */
 	h1
+		font-family: 'Sonsie One', cursive
+		color: #444
+		padding: 2px
+		font-size: 50px
 		display: inline
 
 #login-info
