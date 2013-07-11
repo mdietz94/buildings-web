@@ -55,15 +55,16 @@ def update_building(conn, architect, description, name, date, id):
     c.execute(req.format(json.dumps(architect), json.dumps(description), json.dumps(name), json.dumps(date),json.dumps(id)))
     conn.commit()
 
-def add_building(conn, name, architect, country, state, city, region, address, latitude, longitude, date, description, keywords):
+def add_building(conn, name, architect, state, city, region, address, latitude, longitude, date, description, keywords):
     c = conn.cursor()
     req = "insert into buildings (name, architect, country, state, city, region, address, latitude, longitude, date, description, keywords) values ({0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11})"
     keywords = ";".join(keywords.split()) # any whitespace should just be made into separate tags
-    c.execute(req.format(json.dumps(name),json.dumps(architect),json.dumps(country),json.dumps(state),json.dumps(city),json.dumps(region),json.dumps(address),json.dumps(latitude),json.dumps(longitude),json.dumps(date),json.dumps(description),json.dumps(keywords)))
+    c.execute(req.format(json.dumps(name),json.dumps(architect),json.dumps('United States'),json.dumps(state),json.dumps(city),json.dumps(region),json.dumps(address),json.dumps(latitude),json.dumps(longitude),json.dumps(date),json.dumps(description),json.dumps(keywords)))
     conn.commit()
 
-def delete_building(conn, id):
-    c.execute("delete from buildings where _id={0}".format(json.dumps(id)))
+def delete_building(conn, uid):
+    c = conn.cursor()
+    c.execute("delete from buildings where _id={0}".format(json.dumps(uid)))
     conn.commit()
 
 def get_info(conn, uid):

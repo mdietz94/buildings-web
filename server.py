@@ -30,10 +30,10 @@ def username():
 def find_by_name(name):
     return simplejson.dumps(db.get_buildings_by_name(g.db, name))
 
-@app.route("/find-by-id/<id>")
-def find_by_id(id, methods=['GET','DELETE']):
+@app.route("/find-by-id/<uid>", methods=['GET','DELETE'])
+def find_by_id(uid):
     if request.method == 'GET':
-        return simplejson.dumps(db.get_building_by_id(g.db, id))
+        return simplejson.dumps(db.get_building_by_id(g.db, uid))
     elif request.method == 'DELETE':
         if current_user.get_id() and current_user.get_access() > 0:
             db.delete_building(g.db, uid)
@@ -81,7 +81,7 @@ def edit_building():
 @login_required
 def add_building():
     if current_user.get_access() > 0:
-        db.add_building(g.db, request.form['name'], request.form['architect'], request.form['country'],
+        db.add_building(g.db, request.form['name'], request.form['architect'],
             request.form['state'], request.form['city'], request.form['region'], request.form['address'],
             request.form['latitude'], request.form['longitude'], request.form['date'], request.form['description'], request.form['keywords'])
         return simplejson.dumps({'message': 'OK'})

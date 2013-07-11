@@ -76,17 +76,18 @@ class BuildingDetailView extends Backbone.View
 				<div class="building-name">#{building.get('name')}</div>
 				<img class="building-image" src="/static/images/bldg0x0.jpg"></img>
 				<div class="building-architect">#{if building.get('architect') then building.get('architect') else ''}</div>
-				<div class="building-location">#{if building.get('address') then building.get('address') else ''}</div>
-				<div class="building-location">#{if building.get('region') then building.get('region') else ''}</div>
-				<div class="building-location">#{if building.get('city') then building.get('city') else ''}</div>
-				<div class="building-location">#{if building.get('state') then building.get('state') else ''}</div>
+				<div class="building-address">#{if building.get('address') then building.get('address') else ''}</div>
+				<div class="building-region">#{if building.get('region') then building.get('region') else ''}</div>
+				<div class="building-city">#{if building.get('city') then building.get('city') else ''}</div>
+				<div class="building-state">#{if building.get('state') then building.get('state') else ''}</div>
 				<div class="building-date">#{if building.get('date') then building.get('date') else ''}</div>
 				<div class="building-description">#{if building.get('description') then building.get('description') else ''}</div>
 				<input id="edit-button" type='submit' value='Edit'></input>
+				<input id="delete-button" type='submit' value='Delete'></input>
 				<input style='display: none;' id="cancel-button" type='submit' value='Cancel'></input>
 				""")
 				$("#edit-button").bind 'click', BuildingDetailView.prototype.enableEditing
-
+				$("#delete-button").bind 'click', BuildingDetailView.prototype.deleteBuilding
 				$.ajax {
 					type: "HEAD",
 					url: "/static/images/bldg#{building.get('id')}x0.jpg",
@@ -115,6 +116,17 @@ class BuildingDetailView extends Backbone.View
 				success: ->
 					Buildings.trigger 'change:selection'
 				}
+
+	deleteBuilding: ->
+		uid = Buildings.selection.get('id')
+		$.ajax {
+			type: 'DELETE',
+			url: "/find-by-id/#{uid}",
+			success: ->
+				alert("Building deleted!")
+			error: ->
+				alert("An error has occured!")
+		}
 
 replaceEl = (selector, placeholder='') ->
 	el = $(selector)
@@ -180,6 +192,18 @@ refreshUserInfo = ->
 			$("#login-info a").click ->
 				$("#login-form").show()
 
+
+addBuilding = (building) ->
+	$.ajax {
+		type: 'POST',
+		url: "/add",
+		data: building,
+		success: ->
+			alert("Building added!")
+		error: ->
+			alert("An error has occured!")
+	}
+
 $ ->
 	Buildings.refresh()
 	new BuildingsView
@@ -193,3 +217,29 @@ $ ->
 	$("#login-form-submit").click login
 	$("#login-form-register").click register
 	refreshUserInfo()
+
+	$("#add-building").click ->
+		$("#building-detail").html("""
+		<textarea class="building-name" placeholder='name'></textarea>
+		<textarea class="building-architect" placeholder='architect'></textarea>
+		<textarea class="building-latitude" placeholder='latitude'></textarea>
+		<textarea class="building-longitude" placeholder='longitude'></textarea>
+		<textarea class="building-address" placeholder='address'></textarea>
+		<textarea class="building-region" placeholder='region'></textarea>
+		<textarea class="building-city" placeholder='city'></textarea>
+		<textarea class="building-state" placeholder='state'></textarea>
+		<textarea class="building-date" placeholder='date'></textarea>
+		<textarea class="building-description" placeholder='description'></textarea>
+		<textarea class="building-keywords" placeholder='keywords (separate with semi-colons or whitespace )'></textarea>
+		<input id="submit-button" type='submit' value='Submit'></input>
+		<input id="cancel-button" type='submit' value='Cancel'></input>
+		""")
+		$("#cancel-button").click ->
+			$("#building-detail").html ''
+		$("#submit-button").click ->
+			addBuilding { name: $(".building-name").val(), architect: $(".building-architect").val(), 
+			latitude: $(".building-latitude").val(), longitude: $(".building-longitude").val(), 
+			address: $(".building-address").val(), region: $(".building-region").val(), 
+			city: $(".building-city").val(), state: $(".building-state").val(), 
+			date: $(".building-date").val(), description: $(".building-description").val(),
+			keywords: $(".building-keywords").val() }
