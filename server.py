@@ -1,15 +1,12 @@
 from flask import Flask, render_template, request, jsonify, g, session, app, Response, redirect, abort
 from flask.ext.login import LoginManager, login_required, login_user, logout_user, current_user 
-
-
+import os
 import simplejson
 from db import db
 from user import *
 import json
 
-
 app = Flask(__name__)
-
 login_manager = LoginManager()
 login_manager.setup_app(app)
 login_manager.login_view = "login"
@@ -21,6 +18,20 @@ def before_request():
 @app.route("/")
 def index():
     return render_template("index.html")
+
+@app.route('/images/<uid>', methods=['POST'])
+def add_image(uid):
+    img_num = [ x for x in os.listdir('./static/images') if x.startswith('bldg{0}x'.format(uid))]
+    img_num = len(img_num)
+    target = os.path.join('./static/images', 'bldg{0}x{1}.jpg'.format(uid,img_num))
+    try:
+        request.files['data'].save(target)
+    except Exception as e:
+        print("Image Error {0}".format(str(e)))
+        return abort(500)
+    return simplejson.dumps({ 'message': 'OK' })
+        
+
 
 @app.route("/username")
 def username():

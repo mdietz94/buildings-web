@@ -2,6 +2,8 @@ class Building extends Backbone.Model
 	initialize: ->
 		if !this.get('description')
 			this.set {'description': "Contribute a description to this building." }
+		if !this.get('architect')
+			this.set {'architect': "Unknown Architect"}
 
 class BuildingList extends Backbone.Collection
 	model: Building
@@ -88,7 +90,9 @@ class BuildingDetailView extends Backbone.View
 			if building
 				$("#building-detail").html("""
 				<div style="display: none;" class="building-id">#{building.get('id')}</div>
-				<div class="building-name">#{building.get('name')}</div>
+				<div class="building-name">#{building.get('name')}
+				<img src='/static/images/delete.png' id='delete-button' height='35px' style='right: 10px; position: absolute;'></img>
+				</div>
 				<img class="building-image" src="/static/images/bldg0x0.jpg"></img>
 				<div class="building-architect">#{if building.get('architect') then building.get('architect') else ''}</div>
 				<div class="building-address">#{if building.get('address') then building.get('address') else ''}</div>
@@ -97,10 +101,23 @@ class BuildingDetailView extends Backbone.View
 				<div class="building-state">#{if building.get('state') then building.get('state') else ''}</div>
 				<div class="building-date">#{if building.get('date') then building.get('date') else ''}</div>
 				<div class="building-description">#{if building.get('description') then building.get('description') else ''}</div>
-				<input id="delete-button" type='submit' value='Delete'></input>
+				<input id='new-image' type='file'></input>
 				<input style='display: none;' id="cancel-button" type='submit' value='Cancel'></input>
 				""")
 				$("#delete-button").bind 'click', BuildingDetailView.prototype.deleteBuilding
+				$("#new-image").change (e) ->
+					uid = $(".building-id").text()
+					xhr = new XMLHttpRequest()
+					fd = new FormData()
+					xhr.open 'POST', "/images/#{uid}", true
+					#xhr.onreadystatechange = ->
+						#if xhr.readyState == 4 and xhr.status == 200
+							#imageName = xhr.responseText
+							#do what you want with the image name returned
+							#e.g update the interface
+					fd.append 'data', e.target.files[0]
+					xhr.send fd
+					e.target.value = ''
 				$.ajax {
 					type: "HEAD",
 					url: "/static/images/bldg#{building.get('id')}x0.jpg",
@@ -208,9 +225,9 @@ refreshUserInfo = ->
 
 addBuilding = (building) ->
 	$.ajax {
-		type: 'POST',
-		url: "/add",
-		data: building,
+		type: 'POST'
+		url: "/add"
+		data: building
 		success: ->
 			alert("Building added!")
 		error: ->
