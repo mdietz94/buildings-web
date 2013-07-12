@@ -93,7 +93,7 @@ class BuildingDetailView extends Backbone.View
 				<div class="building-name">#{building.get('name')}
 				<img src='/static/images/delete.png' id='delete-button' height='35px' style='right: 10px; position: absolute;'></img>
 				</div>
-				<img class="building-image" src="/static/images/bldg0x0.jpg"></img>
+				<img class="building-image" src=""></img>
 				<div class="building-architect">#{if building.get('architect') then building.get('architect') else ''}</div>
 				<div class="building-address">#{if building.get('address') then building.get('address') else ''}</div>
 				<div class="building-region">#{if building.get('region') then building.get('region') else ''}</div>
@@ -123,6 +123,8 @@ class BuildingDetailView extends Backbone.View
 					url: "/static/images/bldg#{building.get('id')}x0.jpg",
 					success: ->
 						$(".building-image").attr 'src', "/static/images/bldg#{building.get('id')}x0.jpg"
+					error: ->
+						$(".building-image").attr 'src', '/static/images/bldg0x0.jpg'
 				}
 
 	enableEditing: ->
