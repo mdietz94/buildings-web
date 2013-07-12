@@ -71,8 +71,18 @@ class BuildingsView extends Backbone.View
 class BuildingDetailView extends Backbone.View
 	initialize: ->
 		Buildings.bind 'change:selection', this.render
+		this.first = true
 
 	render: ->
+		if not this.first
+			$("#building-detail").addClass('flip')
+			setTimeout applyChange, 500
+		else
+			applyChange()
+			this.first = false
+
+	applyChange = ->
+		$("#building-detail").removeClass('flip')
 		$.getJSON "/find-by-id/#{Buildings.selection.get('id')}", (response) ->
 			this.building = building = new Building(response)
 			if building
