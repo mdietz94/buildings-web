@@ -80,7 +80,7 @@ def add_user(conn, username, password):
         return None
     m = hashlib.md5()
     m.update(bytes("MRD" + password,'utf-8'))
-    c.execute("insert into users (username,password) values({0},{1},0)".format(json.dumps(username),json.dumps(m.hexdigest())))
+    c.execute("insert into users (username,password,access_level) values({0},{1},0)".format(json.dumps(username),json.dumps(m.hexdigest())))
     conn.commit()
     return c.execute("select id from users where username={0}".format(json.dumps(username))).fetchone()[0]
 
