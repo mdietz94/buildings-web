@@ -135,11 +135,10 @@ class BuildingDetailView extends Backbone.View
 		$("#cancel-button").show()
 		$("#cancel-button").click ->
 			Buildings.trigger('change:selection')
-		$("#edit-button").unbind 'click'
-		$("#edit-button").val 'Save'
-		$("#edit-button").click ->
-			building = { id: $(".building-id").text(), name: $(".building-name").val(), architect: $(".building-architect").val(), 
-			description: $(".building-description").val(), date: $(".building-date").val() }
+		$(".selected img").unbind 'click'
+		$(".selected img").click ->
+			building = { id: $(".building-id").text(), name: $.trim($(".building-name").val()), architect: $.trim($(".building-architect").val()), 
+			description: $.trim($(".building-description").val()), date: $.trim($(".building-date").val()) }
 			console.log building
 			$.ajax {
 				type: "POST",
