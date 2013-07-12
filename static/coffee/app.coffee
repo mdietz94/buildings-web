@@ -102,6 +102,7 @@ class BuildingDetailView extends Backbone.View
 				<div class="building-date">#{if building.get('date') then building.get('date') else ''}</div>
 				<div class="building-description">#{if building.get('description') then building.get('description') else ''}</div>
 				<input id='new-image' type='file'></input>
+				<div class='loading'></div>
 				<input style='display: none;' id="cancel-button" type='submit' value='Cancel'></input>
 				""")
 				$("#delete-button").bind 'click', BuildingDetailView.prototype.deleteBuilding
@@ -110,14 +111,16 @@ class BuildingDetailView extends Backbone.View
 					xhr = new XMLHttpRequest()
 					fd = new FormData()
 					xhr.open 'POST', "/images/#{uid}", true
-					#xhr.onreadystatechange = ->
-						#if xhr.readyState == 4 and xhr.status == 200
-							#imageName = xhr.responseText
-							#do what you want with the image name returned
-							#e.g update the interface
+					xhr.onreadystatechange = ->
+						if xhr.readyState == 4 and xhr.status == 200
+							$('.loading').spin(false)
+							alert("Uploaded successfully.")
+							Buildings.trigger('change:selection')
 					fd.append 'data', e.target.files[0]
 					xhr.send fd
 					e.target.value = ''
+					$('.loading').spin( { 'lines': 15, 'length': 0, 'width': 4, 'radius': 20, 'corners': 0,
+					'rotate': 0, 'trail': 64, 'speed': 1.0, 'direction': 1 })
 				$.ajax {
 					type: "HEAD",
 					url: "/static/images/bldg#{building.get('id')}x0.jpg",
