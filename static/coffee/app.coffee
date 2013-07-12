@@ -112,10 +112,13 @@ class BuildingDetailView extends Backbone.View
 					fd = new FormData()
 					xhr.open 'POST', "/images/#{uid}", true
 					xhr.onreadystatechange = ->
-						if xhr.readyState == 4 and xhr.status == 200
+						if xhr.readyState == 4
 							$('.loading').spin(false)
-							alert("Uploaded successfully.")
-							Buildings.trigger('change:selection')
+							if xhr.status == 200
+								alert("Uploaded successfully.")
+								Buildings.trigger('change:selection')
+							else
+								alert("You must be logged in and have permission to upload files.")
 					fd.append 'data', e.target.files[0]
 					xhr.send fd
 					e.target.value = ''

@@ -20,7 +20,10 @@ def index():
     return render_template("index.html")
 
 @app.route('/images/<uid>', methods=['POST'])
+@login_required
 def add_image(uid):
+    if current_user.get_access() == 0:
+        return abort(401)
     img_num = [ x for x in os.listdir('./static/images') if x.startswith('bldg{0}x'.format(uid))]
     img_num = len(img_num)
     target = os.path.join('./static/images', 'bldg{0}x{1}.jpg'.format(uid,img_num))
