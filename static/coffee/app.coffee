@@ -54,11 +54,11 @@ class BuildingsView extends Backbone.View
 			<li id=#{building.get('id')} class="building-list-item">
 				<div class="building-list-item-name">#{building.get('name')}</div>
 				<div class="building-list-item-architect">#{if building.get('architect') then building.get('architect') else ''}</div>
-				<img src="/static/images/pencil.png" height="70px" ></img>
+				<div class="building-list-item-button">Edit</div>
 			</li>
 			""")
 		$(".building-list-item").click (e) ->
-			if e.target != $(".selected img")[0] 
+			if e.target != $(".selected .building-list-item-button")[0]
 				actionItemClicked(e)
 
 	actionItemClicked = (event) ->
@@ -67,8 +67,8 @@ class BuildingsView extends Backbone.View
 	selectionChanged: ->
 		$(".building-list-item").removeClass 'selected'
 		$("#" + Buildings.selection?.id).addClass 'selected'
-		$(".building-list-item img").unbind 'click'
-		$(".selected img").bind 'click', BuildingDetailView.prototype.enableEditing
+		$(".selected .building-list-item-button").unbind 'click'
+		$(".selected .building-list-item-button").bind 'click', BuildingDetailView.prototype.enableEditing
 
 class BuildingDetailView extends Backbone.View
 	initialize: ->
@@ -141,18 +141,38 @@ class BuildingDetailView extends Backbone.View
 		$("#cancel-button").show()
 		$("#cancel-button").click ->
 			Buildings.trigger('change:selection')
-		$(".selected img").unbind 'click'
-		$(".selected img").click ->
+			$(".selected .building-list-item-button").toggleClass 'flip'
+			f = ->
+				$(".selected .building-list-item-button").html 'Edit'
+			setTimeout f, 500
+		$(".selected .building-list-item-button").toggleClass 'flip'
+		f = ->
+			$(".selected .building-list-item-button").html 'Save'
+		setTimeout f, 500
+		$(".selected .building-list-item-button").unbind 'click'
+		$(".selected .building-list-item-button").click ->
 			building = { id: $(".building-id").text(), name: $.trim($(".building-name").val()), architect: $.trim($(".building-architect").val()), 
 			description: $.trim($(".building-description").val()), date: $.trim($(".building-date").val()) }
-			console.log building
 			$.ajax {
 				type: "POST",
 				url: "/edit",
 				data: building,
 				success: ->
 					Buildings.trigger 'change:selection'
-				}
+					$(".selected .building-list-item-button").toggleClass 'flip'
+					f = ->
+						$(".selected .building-list-item-button").html 'Edit'
+					setTimeout f, 500
+				error: ->
+					alert("Error: You must be logged in and have access.")
+					Buildings.trigger 'change:selection'
+					$(".selected .building-list-item-button").toggleClass 'flip'
+					f = ->
+						$(".selected .building-list-item-button").html 'Edit'
+					setTimeout f, 500
+			}
+
+
 
 	deleteBuilding: ->
 		uid = Buildings.selection.get('id')
