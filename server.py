@@ -28,7 +28,10 @@ def add_image(uid):
     img_num = len(img_num)
     target = os.path.join('./static/images', 'bldg{0}x{1}.jpg'.format(uid,img_num))
     try:
-        request.files['data'].save(target)
+        if request.files['data'].filename.rsplit('.',1)[1].upper() == 'JPG':
+            request.files['data'].save(target)
+        else:
+            return abort(415)
     except Exception as e:
         print("Image Error {0}".format(str(e)))
         return abort(500)
