@@ -27,9 +27,17 @@ def get_all_buildings(conn):
     c = conn.cursor()
     return get_buildings_from_cursor(c.execute("select * from buildings"), False)
 
+def get_max_id(conn): # since we start at 0, we can use this to search for potential pictures when that's all we want
+    c = conn.cursor()
+    return { 'id': c.execute('select max(_id) from buildings').fetchone()[0] }
+
 def get_buildings_by_name(conn, name):
     c = conn.cursor()
-    return get_buildings_from_cursor(c.execute("select * from buildings where upper(name) like '%" + name.upper()  + "%' order by length(description) desc limit 200" ), False)
+    return get_buildings_from_cursor(c.execute("select * from buildings where upper(name) like '%" + name.upper()  + "%' order by length(description)  desc limit 200" ), False)
+
+def search(conn, terms):
+    c = conn.cursor()
+    return get_buildings_from_cursor(c.execute("select * from buildings where upper(name) like '%" + name.upper()  + "%' or upper(architect) like '%" + name.upper()  + "%' order by length(description)  desc limit 200" ), False)
 
 def get_building_by_id(conn, id):
     c = conn.cursor()

@@ -47,6 +47,14 @@ def username():
 def find_by_name(name):
     return simplejson.dumps(db.get_buildings_by_name(g.db, name))
 
+@app.route("/search/<terms>")
+def search(terms):
+    return simplejson.dumps(db.search(g.db, terms))
+
+@app.route("/max-id")
+def get_max_id():
+    return simplejson.dumps(db.get_max_id())
+
 @app.route("/find-by-id/<uid>", methods=['GET','DELETE'])
 def find_by_id(uid):
     if request.method == 'GET':

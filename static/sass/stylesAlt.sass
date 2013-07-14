@@ -1,0 +1,224 @@
+body
+	overflow-x: hidden
+
+#building-list
+	left: 0px
+	top: 75px
+	bottom: 0px
+	right: 0px
+	padding: 0px
+	margin: 0px
+
+
+::-webkit-scrollbar
+	width: 8px
+::-webkit-scrollbar-track
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0)
+	border-radius: 5px
+	&:hover
+		-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3)
+::-webkit-scrollbar-thumb
+	background: rgba(23,44,175,.5)
+	border-radius: 5px
+	&:hover
+		background: rgba(23,44,175,.7)
+	&:active
+		background: rgba(23,44,175,1)
+
+.building-list-item
+	list-style-type: none
+	font-family: 'Open Sans', sans-serif
+	position: relative
+	height: 30px
+	left: 10px
+	text-align: center
+	padding: 20px
+	width: 340px
+	color: #fff
+	border-radius: 2px
+	margin-bottom: 5px
+	-webkit-transition: width 0.5s ease-out, background-color 0.5s ease-out, left 0.5s ease-out
+	.building-list-item-name
+		font-size: 20px
+		white-space: nowrap
+		text-overflow: ellipsis
+		display: block
+		overflow: hidden
+	.building-list-item-architect
+		mergin-left: 4px
+		font-style: italic
+		font-size: 14px
+	&:hover:not(.selected)
+		opacity: .8
+	.building-list-item-button
+		opacity: 0
+		width: 50px
+		height: 50px
+		font-size: 14px
+		margin-top auto
+		margin-bottom auto
+		display: block
+		background-color: rgba(255,192,0,0.7)
+		border-radius: 5px
+		line-height: 50px
+		top: -60px
+		position: relative
+		left: -90px
+		padding: 5px
+		text-align: center
+		-webkit-transition: none
+		
+
+li:nth-child(odd):not(.selected)
+	background-color: #172CAF
+
+li:nth-child(even):not(.selected)
+	background-color: #4B5ED7
+li:active:not(.selected)
+	left: 1px
+.selected
+	background-color: #2E3983
+	left: 80px
+	width: 270px
+	.building-list-item-button
+		-webkit-transition: opacity 0.5s 0.5s, -webkit-transform 1s
+		opacity: 1
+		&:hover
+			background-color: rgba(255,192,0,0.8)
+		&:active
+			background-color: rgba(255,192,0,1)
+
+.flip
+	-webkit-transform-style: preserve-3d
+	-webkit-backface-visibility: hidden
+	-webkit-transform: rotateY( 360deg )
+
+#building-detail
+	-webkit-transition: opacity 0.25s ease-in
+	position: absolute
+	top: 75px
+	left: 500px
+	overflow-y: auto
+	bottom: 0px
+	padding: 5px
+	right: 0px
+	font-family: 'Open Sans', sans-serif
+	.building-name
+		text-align: center
+		font-size: 30px
+		border-bottom: 1px solid grey
+	.building-architect
+	.building-location
+	.building-date
+	.building-description
+		text-align: justify
+		padding: 30px
+		line-height: 1.4em
+		font-size: 19px
+	.building-image
+		padding: 5px
+		margin: 10px
+		border: 2px solid black
+		display: block
+		float: right
+		width: 300px
+		height: 200px
+.flip
+	opacity: 0
+
+#header
+	position: absolute
+	top: 0px
+	left: 0px
+	right: 0px
+	height: 75px	
+	margin: 0px
+	padding: 0px
+	font-family: serif
+	font-size: 10px
+	background: #ffffff /* Old browsers */
+	background: -moz-linear-gradient(top, #ffffff 0%, #e5e5e5 100%) /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#e5e5e5)) /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #ffffff 0%,#e5e5e5 100%) /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #ffffff 0%,#e5e5e5 100%) /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #ffffff 0%,#e5e5e5 100%) /* IE10+ */
+	background: linear-gradient(to bottom, #ffffff 0%,#e5e5e5 100%) /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5',GradientType=0 ) /* IE6-9 */
+	h1
+		font-family: 'Sonsie One', cursive
+		color: #444
+		padding: 2px
+		font-size: 50px
+		display: inline
+
+#login-info
+	position: absolute
+	right: 20px
+	top: 10px
+	margin: 20px
+	p
+		display: inline
+		margin-right: 2px
+
+#search-bar
+	font-family: 'Open Sans', sans-serif
+	border-radius: 5px
+	height: 30px
+	width: 300px
+	margin-left: 200px
+	margin-top: 10px
+	padding: 2px
+	display: inline
+
+#register
+	top: 200px
+	position: relative
+	display: block
+#login-form
+	position: relative
+	z-index: 100
+	margin-top: 100px
+	margin-bottom: 100px
+	width: 200px
+	height: 200px
+	background-color: white
+	border-radius: 2px
+
+#add-building
+	cursor: hand
+	cursor: pointer
+	position: relative
+	top: 10px
+	height: 30px
+
+.tooltip
+	.arrow-up
+		position: inherit
+		top: 3px
+		right: 19px
+		padding: 0px
+		border-radius: 0px
+		background-color: transparent
+		width: 0
+		height: 0
+		border-left: 5px solid transparent
+		border-right: 5px solid transparent
+		border-bottom: 5px solid black
+	span
+		position: inherit
+		color: white
+		top: 25px
+		right: 58px
+		height: 20px
+		width: 40px
+		opacity: .8
+		background-color: black
+		border-radius: 3px
+		display: none
+		padding: 5px
+	&:hover span
+		display: inline
+.loading
+	position: relative
+	left: -350px
+	top: 30px
