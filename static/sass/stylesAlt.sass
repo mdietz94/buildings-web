@@ -1,5 +1,7 @@
 body
 	overflow-x: hidden
+	overflow-y: hidden
+	overflow: hidden
 
 #building-list
 	position: absolute
@@ -22,24 +24,28 @@ body
 		font-size: 200px
 		color: orange
 		line-height: 1em
-	&:after
-		content: ""
-		opacity: 0.3
-		-webkit-transition: opacity 5s ease-in
-		z-index: -1
-		background-image: url('/static/images/collection.jpg')
-		background-repeat: no-repeat
-		background-position: center
+
+#background-grid
+	position: absolute
+	left: 0px
+	right: 0px
+	top: 75px
+	bottom: 0px
+	display: block
+	img
 		position: absolute
-		left: 0px
-		top: 0px
-		bottom: 0px
-		right: 0px
-		padding: 0px
-		margin: 0px
-		display: inline
-
-
+		border-radius: 10px
+		width: 64px
+		display: inline-block
+		-webkit-transition: top 10s, left 10s, opacity 2s
+		&:hover
+			cursor: pointer
+			cursor: hand
+			opacity: 0.5
+	.disabled
+		margin: 10px
+		z-index: -1
+		position: relative
 
 ::-webkit-scrollbar
 	width: 8px
@@ -56,107 +62,6 @@ body
 	&:active
 		background: rgba(23,44,175,1)
 
-.building-list-item
-	list-style-type: none
-	font-family: 'Open Sans', sans-serif
-	position: relative
-	height: 30px
-	left: 10px
-	text-align: center
-	padding: 20px
-	width: 340px
-	color: #fff
-	border-radius: 2px
-	margin-bottom: 5px
-	-webkit-transition: width 0.5s ease-out, background-color 0.5s ease-out, left 0.5s ease-out
-	.building-list-item-name
-		font-size: 20px
-		white-space: nowrap
-		text-overflow: ellipsis
-		display: block
-		overflow: hidden
-	.building-list-item-architect
-		mergin-left: 4px
-		font-style: italic
-		font-size: 14px
-	&:hover:not(.selected)
-		opacity: .8
-	.building-list-item-button
-		opacity: 0
-		width: 50px
-		height: 50px
-		font-size: 14px
-		margin-top auto
-		margin-bottom auto
-		display: block
-		background-color: rgba(255,192,0,0.7)
-		border-radius: 5px
-		line-height: 50px
-		top: -60px
-		position: relative
-		left: -90px
-		padding: 5px
-		text-align: center
-		-webkit-transition: none
-		
-
-li:nth-child(odd):not(.selected)
-	background-color: #172CAF
-
-li:nth-child(even):not(.selected)
-	background-color: #4B5ED7
-li:active:not(.selected)
-	left: 1px
-.selected
-	background-color: #2E3983
-	left: 80px
-	width: 270px
-	.building-list-item-button
-		-webkit-transition: opacity 0.5s 0.5s, -webkit-transform 1s
-		opacity: 1
-		&:hover
-			background-color: rgba(255,192,0,0.8)
-		&:active
-			background-color: rgba(255,192,0,1)
-
-.flip
-	-webkit-transform-style: preserve-3d
-	-webkit-backface-visibility: hidden
-	-webkit-transform: rotateY( 360deg )
-
-#building-detail
-	-webkit-transition: opacity 0.25s ease-in
-	position: absolute
-	top: 75px
-	left: 500px
-	overflow-y: auto
-	bottom: 0px
-	padding: 5px
-	right: 0px
-	font-family: 'Open Sans', sans-serif
-	.building-name
-		text-align: center
-		font-size: 30px
-		border-bottom: 1px solid grey
-	.building-architect
-	.building-location
-	.building-date
-	.building-description
-		text-align: justify
-		padding: 30px
-		line-height: 1.4em
-		font-size: 19px
-	.building-image
-		padding: 5px
-		margin: 10px
-		border: 2px solid black
-		display: block
-		float: right
-		width: 300px
-		height: 200px
-.flip
-	opacity: 0
-
 #header
 	position: absolute
 	top: 0px
@@ -167,14 +72,7 @@ li:active:not(.selected)
 	padding: 0px
 	font-family: serif
 	font-size: 10px
-	background: #ffffff /* Old browsers */
-	background: -moz-linear-gradient(top, #ffffff 0%, #e5e5e5 100%) /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#e5e5e5)) /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top, #ffffff 0%,#e5e5e5 100%) /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top, #ffffff 0%,#e5e5e5 100%) /* Opera 11.10+ */
-	background: -ms-linear-gradient(top, #ffffff 0%,#e5e5e5 100%) /* IE10+ */
-	background: linear-gradient(to bottom, #ffffff 0%,#e5e5e5 100%) /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5',GradientType=0 ) /* IE6-9 */
+	background: -webkit-linear-gradient(top, #ffffff 0%,#e5e5e5 100%)
 	h1
 		font-family: 'Sonsie One', cursive
 		color: #444

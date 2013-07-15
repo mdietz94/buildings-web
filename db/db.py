@@ -37,7 +37,7 @@ def get_buildings_by_name(conn, name):
 
 def search(conn, terms):
     c = conn.cursor()
-    return get_buildings_from_cursor(c.execute("select * from buildings where upper(name) like '%" + name.upper()  + "%' or upper(architect) like '%" + name.upper()  + "%' order by length(description)  desc limit 200" ), False)
+    return get_buildings_from_cursor(c.execute("select * from buildings where upper(name) like {0} or upper(architect) like {0} or upper(state) like {0} or upper(city) like {0} or upper(date) like {0} order by length(description)  desc limit 200".format(json.dumps('%' + terms.upper() + '%')) ), False)
 
 def get_building_by_id(conn, id):
     c = conn.cursor()
@@ -56,6 +56,7 @@ def check_login(conn, username, password):
     row = c.execute(req.format(json.dumps(username),json.dumps(m.hexdigest()))).fetchone()
     if row:
         return { 'id': row[0], 'username': row[1], 'password': row[2] }
+    return None
 
 def update_building(conn, architect, description, name, date, id):
     c = conn.cursor()

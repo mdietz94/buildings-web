@@ -53,7 +53,47 @@ class BuildingsView extends Backbone.View
 		#Buildings.bind 'reset', this.render
 		Buildings.bind 'change:selection', this.selectionChanged
 		Buildings.bind 'change:query', this.queryChanged
-		this.render()
+		context = this
+		backGrid = $("#background-grid")
+		backGrid.html ''
+		for i in [0..200]
+			$.ajax {
+				type: 'HEAD'
+				url: "/static/images/bldg#{i}x0.jpg"
+				id: i
+				success: ->
+					console.log @url
+					backGrid.append "<img width='64px' src='#{@url}' id='#{@id}'></img>"
+					console.log "added a pic"
+					$("#" + @id).css 'left', '50%'
+					$("#" + @id).css 'top', '50%'
+					loopRandom(@id)
+			}
+
+	randomizePosition = (id) ->
+		$("#" + id).css 'left', Math.floor(Math.random()*100) + "%"
+		$("#" + id).css 'top', Math.floor(Math.random()*100) + "%"
+
+	loopRandom = (id) ->
+		randomizePosition(id)
+		setTimeout ( -> loopRandom(id) ), 2000
+
+	clearTimers: ->
+		for i in [0..setTimeout(';')]
+			clearTimeout(i)
+		$("#background-grid img").css 'left', ''
+		$("#background-grid img").css 'top', ''
+		$("#background-grid img").css 'opacity', 0
+		setTimeout ( -> $("#background-grid img").addClass 'disabled' ), 2000
+		setTimeout ( -> $("#background-grid img").css 'opacity', .1 ), 3000
+		$("#background-grid").css 'z-index', -1
+
+	startTimers = ->
+		for elem in $("#background-grid img")
+			loopRandom(elem.id)
+		$("#background-grid").css 'z-index', 0
+		$("#background-grid img").css 'opacity', 1
+		$("#background-grid img").removeClass 'disabled'
 
 	render: ->
 		buildingList = $("#building-list")
@@ -296,12 +336,15 @@ addBuilding = (building) ->
 
 $ ->
 	Buildings.refresh()
-	new BuildingsView
+	BuildingView = new BuildingsView
 	new BuildingDetailView
 
 	$("#search-bar").keyup (e) ->
-		Buildings.selectionType = "text"
-		Buildings.refresh()
+		if e.which == 13
+			console.log 'pressed'
+			Buildings.refresh()
+			BuildingView.clearTimers()
+
 
 	$("#login-form").hide()
 	$("#login-form-submit").click login

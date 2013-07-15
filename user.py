@@ -11,7 +11,7 @@ class User(UserMixin):
             self.password = login_info['password']
             self.access_level = login_info['access_level']
         else:
-            return None
+            self.id = None
         
     def __repr__(self):
         return "%d/%s/%s" % (self.id, self.name, self.password)
