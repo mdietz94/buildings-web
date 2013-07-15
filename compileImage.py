@@ -4,7 +4,7 @@ import math
 from db import db
 import random
 
-size = 32, 32
+size = 64, 64
 width, height = size
 
 imgs = [ x for x in os.listdir('./static/images') if x.startswith('bldg')]

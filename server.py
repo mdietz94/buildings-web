@@ -19,6 +19,10 @@ def before_request():
 def index():
     return render_template("index.html")
 
+@app.route("/alt")
+def alt_index():
+    return render_template("indexAlt.html")
+
 @app.route('/images/<uid>', methods=['POST'])
 @login_required
 def add_image(uid):
@@ -53,7 +57,7 @@ def search(terms):
 
 @app.route("/max-id")
 def get_max_id():
-    return simplejson.dumps(db.get_max_id())
+    return simplejson.dumps(db.get_max_id(g.db))
 
 @app.route("/find-by-id/<uid>", methods=['GET','DELETE'])
 def find_by_id(uid):

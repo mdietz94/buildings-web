@@ -6,9 +6,12 @@ class User(UserMixin):
         self.id = userid
         self.db = db.connect_db()
         login_info = db.get_info(self.db, userid)
-        self.name = login_info['username']
-        self.password = login_info['password']
-        self.access_level = login_info['access_level']
+        if login_info:
+            self.name = login_info['username']
+            self.password = login_info['password']
+            self.access_level = login_info['access_level']
+        else:
+            return None
         
     def __repr__(self):
         return "%d/%s/%s" % (self.id, self.name, self.password)

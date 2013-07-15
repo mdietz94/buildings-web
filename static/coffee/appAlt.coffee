@@ -4,13 +4,23 @@ class Building extends Backbone.Model
 			this.set {'description': "Contribute a description to this building." }
 		if !this.get('architect')
 			this.set {'architect': "Unknown Architect"}
+		if !this.get('enabled')
+			this.set { 'enabled': true }
 
+# # #
+# BuildingGrid will store all the buildings returned by the first search query
+# and afterwards, will just set buildings.enabled to represent whether each
+# building is still relevant to the query.  That way there will be a difference
+# between the background buildings that were never relevant and buildings that
+# we can fade out to show they were relevant but were since queried against.
+# # #
 class BuildingGrid extends Backbone.Collection
 	model: Building
 	initialize: ->
 		@query = ''
-		$.getJSON "/get-max-id", (response) ->
-			this.reset ({ 'id': id } for id in [0..response['id']])
+		# The first time we will reset our collection to the returned response,
+		# but afterwards we will keep the collection, but change the enabled variable
+		@first = true
 	clear = ->
 		@query = ''
 	append = (additional) ->
@@ -23,33 +33,43 @@ class BuildingGrid extends Backbone.Collection
 			this.trigger('change:selection')
 	refresh: ->
 		context = this
+		# The search bar should clear when we hit enter,
+		# so we are treating queries like a stack
 		@query += $("#search-bar").val() + ' '
 		$.getJSON "/search/#{@query}", (response) ->
-			context.reset(response)
+			if context.first
+				context.reset response
+			else
+				ids = response.map (b) -> b['id']
+				context.reset (context.models.map (m) -> m.set( { 'enabled': false } ) if not m.get('id') in ids)
 			context.trigger('change:query')
+		@first = false
 
-Buildings = new BuildingList
+Buildings = new BuildingGrid
 
 class BuildingsView extends Backbone.View
 
 	initialize: ->
-		Buildings.bind 'reset', this.render
+		#Buildings.bind 'reset', this.render
 		Buildings.bind 'change:selection', this.selectionChanged
 		Buildings.bind 'change:query', this.queryChanged
 		this.render()
 
 	render: ->
 		buildingList = $("#building-list")
-		buildingList.html ''
+		if Building.models?.length > 0
+			buildingList.html ''
+		else
+			buildingList.html '<span>bldg</span>'
 		for building in Buildings.models
 			img_url = ''
 			$.ajax {
 				type: 'HEAD',
 				url: "/static/images/bldg#{building.get("id")}x0.jpg"
 				error: ->
-					buildingList.append("""<a id=#{building.get('id')} src="/static/images/0x0.jpg" class="building-list-item disabled"></a>""")
+					buildingList.append("""<img id=#{building.get('id')} src="/static/images/0x0.jpg" class="building-list-item #{'disabled' if not building.get('enabled')}"></img>""")
 				success: ->
-					buildingList.append("""<a id=#{building.get('id')} src="/static/images/#{building.get("id")}x0.jpg" class="building-list-item disabled"></a>""")
+					buildingList.append("""<img id=#{building.get('id')} src="/static/images/#{building.get("id")}x0.jpg" class="building-list-item #{'disabled' if not building.get('enabled')}"></img>""")
 			}
 		$(".building-list-item").bind 'click', (e) ->
 			actionItemClicked(e)
@@ -65,12 +85,19 @@ class BuildingsView extends Backbone.View
 
 	queryChanged: ->
 		$(".building-list-item").unbind 'click'
-		$(".building-list-item").addClass 'disabled'
-		for building in Buildings.models
-			Building.models.length
-			$("#" + building.get('id')).css 'height', (90 / Building.models.length) + '%'
-			$("#" + building.get('id')).css 'width', (90 / Building.models.length) + '%'
-			$("#" + building.get('id')).removeClass 'disabled'
+		this.render()
+		enabledBldgs = _.filter(Building.models, (m) -> m.get('enabled'))
+		size = 90 / enabledBldgs.length
+		x = y = 0
+		for building in enabledBldgs
+			$("#" + building.get('id')).css 'left', x
+			$("#" + building.get('id')).css 'left', y
+			$("#" + building.get('id')).css 'height', size + '%'
+			$("#" + building.get('id')).css 'width', size + '%'
+			x += size
+			if x + size > 100
+				x = 0
+				y += size
 		$(".building-list-item:not(.disabled)").bind 'click', (e) ->
 			actionItemClicked(e)
 		
@@ -280,7 +307,9 @@ $ ->
 	$("#login-form-submit").click login
 	$("#login-form-register").click register
 	refreshUserInfo()
-
+	$("#building-list span").css 'opacity', 1
+	f = -> $("#building-list span").css 'opacity', .4
+	setTimeout f, 6000
 	$("#add-building").click ->
 		$("#building-detail").html("""
 		<textarea class="building-name" placeholder='name'></textarea>
