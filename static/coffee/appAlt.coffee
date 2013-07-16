@@ -32,6 +32,7 @@ Buildings = new BuildingList
 
 init = ->
 	window.app = {}
+	window.app.loading = false
 	window.app.bitmaps = []
 	window.app.canvas = document.getElementById("canvas")
 	window.app.stage = new createjs.Stage(window.app.canvas)
@@ -149,6 +150,7 @@ handleImageLoad = (e, id, x, y) ->
 		bitmap = e.target
 		window.app.bitmaps = []
 		window.app.floating = false
+		window.app.stage.removeChild(window.app.stage.getChildByName("bg"))
 		for child in window.app.stage.children
 			if child != bitmap
 				r = Math.random()
@@ -166,8 +168,8 @@ handleImageLoad = (e, id, x, y) ->
 		createjs.Tween.get(bitmap).to({
 			x: window.app.canvas.width / 2
 			y: window.app.canvas.height / 2
-			scaleX: window.app.canvas.width / bitmap.image.width
-			scaleY: window.app.canvas.width / bitmap.image.width
+			scaleX: window.app.canvas.width / bitmap.image.width * 1.2
+			scaleY: window.app.canvas.width / bitmap.image.width * 1.2
 			rotation: 0
 			skewX: 0
 			skewY: 90
@@ -183,21 +185,25 @@ createBackground = (bitmap) ->
 		i.src = "/static/images/" + bitmap.image.src.split("thumb_")[1]
 	else
 		i.src = bitmap.image.src
+	window.app.stage.removeAllChildren()
 	i.onload = (e) ->
-		window.app.stage.removeAllChildren()
+		window.app.loading = true
 		b = new createjs.Bitmap(e.target)
 		b.x = window.app.canvas.width / 2
 		b.y = window.app.canvas.height / 2
 		b.regX = b.image.width/2
 		b.regY = b.image.height/2
-		b.scaleX = b.scaleY = b.image.scale = window.app.canvas.width / b.image.width
+		b.parallaxFactor = .1
+		b.rotation = 0
+		b.scaleX = b.scaleY = b.image.scale = window.app.canvas.width * 1.2 / b.image.width
 		b.skewY = 90
+		b.skewX = 0
 		createjs.Tween.get(b).to({
 		skewY: 0
 		alpha: 0.3
-		}, 1000, createjs.Ease.linear)
+		}, 1000, createjs.Ease.linear).call(-> window.app.loading = false)
 		window.app.stage.addChild(b)		
-		$.getJSON "/find-by-id/" + bitmap.image.src.split("bldg")[1].split("x")[0], (response) ->
+		#$.getJSON "/find-by-id/" + bitmap.image.src.split("bldg")[1].split("x")[0], (response) ->
 			# here we can display all the information about the building
 
 
@@ -233,22 +239,23 @@ tick = (event) ->
 	context = window.app.canvas.getContext('2d')
 	#all movement should be event.delta/1000 * pixelsPerSecond
 	window.app.stage.clear()
-	for bitmap in window.app.stage.children
-		#if bitmap.name != 'bg'
-		#	g = new createjs.Graphics()
-		#	g.beginStroke("rgba(0,0,0,0.3)")
-		#	.setStrokeStyle(1, "round")
-		#	.beginFill("#000").drawRect(bitmap.x - bitmap.image.width*.6 * bitmap.scaleX, bitmap.y - bitmap.image.height*.6 *bitmap.scaleY,bitmap.image.width * bitmap.scaleX * 1.2, bitmap.image.height *bitmap.scaleY * 1.2)
-		#	.draw(context)
-		if bitmap.shadow
-			createjs.Tween.get(bitmap.shadow).to({
-				offsetX: bitmap.shadow.offsetX + window.app.parallax.dx * bitmap.parallaxFactor
-				offsetY: bitmap.shadow.offsetY + window.app.parallax.dy * bitmap.parallaxFactor
-				}, 10, createjs.Ease.linear)
-		createjs.Tween.get(bitmap).to({
-			x: bitmap.x + window.app.parallax.dx * bitmap.parallaxFactor
-			y: bitmap.y + window.app.parallax.dy * bitmap.parallaxFactor
-			}, 10, createjs.Ease.linear).call( -> randomizeProperties(bitmap))
+	if not window.app.loading
+		for bitmap in window.app.stage.children
+			#if bitmap.name != 'bg'
+			#	g = new createjs.Graphics()
+			#	g.beginStroke("rgba(0,0,0,0.3)")
+			#	.setStrokeStyle(1, "round")
+			#	.beginFill("#000").drawRect(bitmap.x - bitmap.image.width*.6 * bitmap.scaleX, bitmap.y - bitmap.image.height*.6 *bitmap.scaleY,bitmap.image.width * bitmap.scaleX * 1.2, bitmap.image.height *bitmap.scaleY * 1.2)
+			#	.draw(context)
+			if bitmap.shadow
+				createjs.Tween.get(bitmap.shadow).to({
+					offsetX: bitmap.shadow.offsetX + window.app.parallax.dx * bitmap.parallaxFactor
+					offsetY: bitmap.shadow.offsetY + window.app.parallax.dy * bitmap.parallaxFactor
+					}, 10, createjs.Ease.linear)
+			createjs.Tween.get(bitmap).to({
+				x: bitmap.x + window.app.parallax.dx * bitmap.parallaxFactor
+				y: bitmap.y + window.app.parallax.dy * bitmap.parallaxFactor
+				}, 10, createjs.Ease.linear).call( -> randomizeProperties(bitmap))
 	window.app.parallax.dx = 0
 	window.app.parallax.dy = 0
 	window.app.stage.update()
