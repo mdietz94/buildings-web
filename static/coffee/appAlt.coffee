@@ -9,42 +9,74 @@ init = ->
 		files = r['files'].filter((f) -> f.match("thumb_bldg") )
 		console.log files
 		i = 0
-		for filename in files
-			i += 1
-			bitmap = new createjs.Bitmap("/static/images/" + filename)
-			console.log bitmap.image.height
-			bitmap.x = window.app.canvas.width * .9 * Math.random() | 0
-			bitmap.y = window.app.canvas.height * .9 * Math.random() | 0
-			bitmap.rotation = 360 * Math.random() | 0
-			bitmap.regX = bitmap.image.width/2|0
-			bitmap.regY = bitmap.image.height/2|0
-			bitmap.scaleX = bitmap.scaleY = bitmap.scale = 128.0 / bitmap.image.width
-			bitmap.name = filename
-			bitmap.velocities = {x: 0, y: 0, rotation: 0, skewX: 0, skewY: 0}
-			bitmap.addEventListener 'mouseover', (e) ->
-				bitmap = e.target
-				bitmap.scaleX = bitmap.scaleY = bitmap.scale*1.2
-			bitmap.addEventListener 'mouseout', (e) ->
-				bitmap = e.target
-				bitmap.scaleX = bitmap.scaleY = bitmap.scale*(1/1.2)
-			bitmap.addEventListener 'click', (e) ->
-				bitmap = e.target
-				for child in window.app.stage.children
-					if child != bitmap
-						window.app.floating = false
-						createjs.Tween.get(child).to({
-							x: window.app.canvas.width * 1.1
-							y: window.app.canvas.height * 1.1
-							rotation: 720
-							}, 3000, createjs.Ease.linear)
-			window.app.bitmaps.push bitmap.name
-			window.app.stage.addChild(bitmap)
-			randomizeProperties(bitmap)
-			break if i == 10
-	createjs.Ticker.setFPS(30)
-	createjs.Ticker.addEventListener 'tick', tick
+		for i in [0..20]
+			filename = files[_.random(files.length)]
+			img = new Image()
+			img.src = "/static/images/" + filename
+			img.onload = handleImageLoad
+		createjs.Ticker.setFPS(30)
+		createjs.Ticker.addEventListener 'tick', tick
+
 
 	#for img in window.app.bitmaps
+
+handleImageLoad = (e) ->
+	console.log e
+	bitmap = new createjs.Bitmap(e.target)
+	console.log bitmap.image.height
+	bitmap.regX = bitmap.image.width/2|0
+	bitmap.regY = bitmap.image.height/2|0
+	bitmap.scaleX = bitmap.scaleY = bitmap.scale = 128.0 / bitmap.image.width
+	#bitmap.name = filename
+	bitmap.rotation = _.random(-10,10)
+	bitmap.velocities = {x: 0, y: 0 }
+	bitmap.addEventListener 'mouseover', (e) ->
+		bitmap = e.target
+		bitmap.scaleX = bitmap.scaleY = bitmap.scale*1.2
+	bitmap.addEventListener 'mouseout', (e) ->
+		bitmap = e.target
+		bitmap.scaleX = bitmap.scaleY = bitmap.scale*(1/1.2)
+	bitmap.addEventListener 'click', (e) ->
+		bitmap = e.target
+		window.app.floating = false
+		for child in window.app.stage.children
+			if child != bitmap
+				createjs.Tween.get(child).to({
+					x: window.app.canvas.width * 1.1
+					rotation: 720
+					}, 1000, createjs.Ease.linear)
+		createjs.Tween.get(bitmap).to({
+			x: window.app.canvas.width / 2
+			y: window.app.canvas.height / 2
+			scaleX: window.app.canvas.width / bitmap.image.width
+			scaleY: window.app.canvas.width / bitmap.image.width
+			rotation: 0
+			skewX: 0
+			skewY: 90
+			}, 1000, createjs.Ease.linear)
+		setTimeout ( -> createBackground(bitmap) ), 1000
+
+	window.app.bitmaps.push bitmap.name
+	window.app.stage.addChild(bitmap)
+	randomizeProperties(bitmap)
+
+createBackground = (bitmap) ->
+	i = new Image()
+	i.src = "/static/images/" + bitmap.image.src.split("thumb_")[1]
+	i.onload = (e) ->
+		window.app.stage.removeAllChildren()
+		b = new createjs.Bitmap(e.target)
+		b.x = window.app.canvas.width / 2
+		b.y = window.app.canvas.height / 2
+		b.regX = b.image.width/2
+		b.regY = b.image.height/2
+		b.scaleX = b.scaleY = b.image.scale = window.app.canvas.width / b.image.width
+		b.skewY = 90
+		createjs.Tween.get(b).to({
+		skewY: 0
+		}, 1000, createjs.Ease.linear)
+		window.app.stage.addChild(b)
+
 
 randomizeProperties = (bitmap) ->
 	if window.app.floating
@@ -60,32 +92,22 @@ randomizeProperties = (bitmap) ->
 				bitmap.y = bitmap.image.height
 			else
 				bitmap.y = window.app.canvas.height - bitmap.image.height
-		bitmap.rotation %= 360
-		if bitmap.velocities.rotation > 10 or bitmap.velocities.rotation < -10
-			bitmap.velocities.rotation *= .9
-		if bitmap.skewX < -10 or bitmap.skewX > 10
-			bitmap.velocities.skewX = -bitmap.velocities.skewX * .5
-		if bitmap.skewY > 10 or bitmap.skewY < -10
-			bitmap.velocities.skewY = -bitmap.velocities.skewY * .5
 		bitmap.velocities = {
-			x: bitmap.velocities.x + _.random(-.5,.5)
-			y: bitmap.velocities.y + _.random(-.5,.5)
-			rotation: bitmap.velocities.rotation + _.random(-.5,.5)
-			skewX: bitmap.velocities.skewX + _.random(-.5,.5)
-			skewY: bitmap.velocities.skewY + _.random(-.5,.5)
+			x: bitmap.velocities.x + _.random(-.02,.02)
+			y: bitmap.velocities.y + _.random(-.02,.02)
 		}
 		createjs.Tween.get(bitmap).to({
 			x: bitmap.x + bitmap.velocities.x
 			y: bitmap.y + bitmap.velocities.y
-			rotation: bitmap.rotation + bitmap.velocities.rotation
-			skewX: bitmap.skewX + bitmap.velocities.skewX
-			skewY: bitmap.skewY + bitmap.velocities.skewY
-			}, 250 * (Math.random() * .4 + .6), createjs.Ease.linear).call( -> randomizeProperties(bitmap))
+			}, 10 * (Math.random() * .4 + .6), createjs.Ease.linear).call( -> randomizeProperties(bitmap))
 
 
 tick = (event) ->
+	# we do this on tick in case of a resize
+	$("#canvas").attr 'width', document.width + "px"
+	$("#canvas").attr 'height', (document.height - 75) + "px"
 	window.app.stage.update()
-	context = window.app.canvas.getContext('2d')
+	#context = window.app.canvas.getContext('2d')
 	#all movement should be event.delta/1000 * pixelsPerSecond
 	#for bitmapName in window.app.bitmaps
 	#	bitmap = window.app.stage.getChildByName(bitmapName)
@@ -97,6 +119,4 @@ tick = (event) ->
 
 
 $ ->
-	$("#canvas").attr 'width', document.width + "px"
-	$("#canvas").attr 'height', (document.height - 75) + "px"
 	init()
