@@ -70,6 +70,20 @@ refresh = ->
 			if ids.indexOf(n) < 0
 				createjs.Tween.get(child).to({skewX: 90}, 1000, createjs.Ease.linear)
 				toRemove.push child
+		$.getJSON "/static/images", (r) ->
+			files = r['files']
+			for id in ids
+				children = window.app.stage.children.map((c) -> c.name.split("bldg")[1].split("x")[0])
+				console.log children
+				if children.indexOf("#{id}") < 0
+					img = new Image()
+					if "bldg" + id + "x0.jpg" in files
+						img.src = "/static/images/bldg" + id + "x0.jpg"
+					else
+						img.src = "/static/images/bldg0x0.jpg"
+					((i) ->
+						img.onload = (e) -> handleImageLoad(e, i)
+					)(id)
 		((toRemove) ->
 			setTimeout(( ->
 				for r in toRemove
