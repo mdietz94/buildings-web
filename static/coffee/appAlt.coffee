@@ -1,4 +1,4 @@
-#
+#	
 # Just in general sloppy code, needs rewrite, like for instance, we should only be ticking when things change
 # not a big deal for the moment but huge for deployment
 #
@@ -57,6 +57,7 @@ init = ->
 		bitmap.scaleX = bitmap.scaleY = bitmap.image.scale = 2 * document.width / bitmap.image.width
 		bitmap.x = document.width / 2
 		bitmap.y = document.height / 2
+		bitmap.alpha = .3
 		bitmap.parallaxFactor = .1
 		bitmap.name = 'bg'
 		window.app.stage.addChild(bitmap)
@@ -79,49 +80,44 @@ init = ->
 	createjs.Ticker.addEventListener 'tick', tick
 
 refresh = ->
-	if window.app.first
-		window.app.first = false
-		window.app.stage.removeAllChildren()
-		window.app.bitmaps = []
-		$.getJSON "/static/images", (r) ->
-				files = r['files']
-				for b in Buildings.models
-					img = new Image()
-					if "bldg" + b.get('id') + "x0.jpg" in files
-						img.src = "/static/images/bldg" + b.get('id') + "x0.jpg"
-					else
-						img.src = "/static/images/bldg0x0.jpg"
-					((i) ->
-						img.onload = (e) -> handleImageLoad(e, i)
-					)(b['id'])
-	else
-		ids = Buildings.models.map( (m) -> "#{m.get('id')}" )
-		toRemove = []
-		for child in window.app.stage.children
-			n = child.name.split("bldg")[1].split("x")[0]
+	ids = Buildings.models.map( (m) -> "#{m.get('id')}" )
+	toRemove = []
+	for child in window.app.stage.children
+		n = child.name.split("bldg")[1]
+		if n
+			n = n.split("x")[0]
 			if ids.indexOf(n) < 0
 				createjs.Tween.get(child).to({skewX: 90}, 1000, createjs.Ease.linear)
 				toRemove.push child
-		$.getJSON "/static/images", (r) ->
-			files = r['files']
-			for id in ids
-				children = window.app.stage.children.map((c) -> c.name.split("bldg")[1].split("x")[0])
-				if children.indexOf("#{id}") < 0
-					img = new Image()
-					if "bldg" + id + "x0.jpg" in files
-						img.src = "/static/images/bldg" + id + "x0.jpg"
-					else
-						img.src = "/static/images/bldg0x0.jpg"
-					((i) ->
-						img.onload = (e) -> handleImageLoad(e, i)
-					)(id)
-		((toRemove) ->
-			setTimeout(( ->
-				for r in toRemove
-					window.app.stage.removeChild(r)
-			), 1000)
-		)(toRemove)
-
+	$.getJSON "/static/images", (r) ->
+		files = r['files']
+		x = 100
+		y = 100
+		children = window.app.stage.children.map((c) ->
+			c = c.name.split("bldg")[1]
+			if c
+				return c.split("x")[0]
+			undefined )
+		for id in ids
+			if children.indexOf("#{id}") < 0
+				img = new Image()
+				if "bldg" + id + "x0.jpg" in files
+					img.src = "/static/images/thumb_bldg" + id + "x0.jpg"
+				else
+					img.src = "/static/images/thumb_bldg0x0.jpg"
+				((i, xx, xy) ->
+					img.onload = (e) -> handleImageLoad(e, i, xx, xy)
+				)(id, x, y)
+				x += 200
+				if x + 200 > window.app.canvas.width
+					x = 100
+					y += 200
+	((toRemove) ->
+		setTimeout(( ->
+			for r in toRemove
+				window.app.stage.removeChild(r)
+		), 1000)
+	)(toRemove)
 
 
 handleImageLoad = (e, id, x, y) ->
@@ -140,6 +136,8 @@ handleImageLoad = (e, id, x, y) ->
 	bitmap.rotation = 0
 	bitmap.velocities = {x: 0, y: 0 }
 	bitmap.shadow = new createjs.Shadow("#000000", 0, 0, 8);
+	bitmap.skewX = 90
+	setTimeout( ( -> createjs.Tween.get(bitmap).to({ skewX: 0 }, 1000, createjs.Ease.linear) ), 1000 )
 	bitmap.addEventListener 'mouseover', (e) ->
 		bitmap = e.target
 		bitmap.scaleX = bitmap.scaleY = bitmap.scale*1.2
@@ -150,9 +148,10 @@ handleImageLoad = (e, id, x, y) ->
 		bitmap = e.target
 		window.app.bitmaps = []
 		window.app.floating = false
-		window.app.stage.removeChild(window.app.stage.getChildByName("bg"))
 		for child in window.app.stage.children
-			if child != bitmap
+			if child.name == 'bg'
+				( (child) -> createjs.Tween.get(child).to({alpha: 0}, 2000, createjs.Ease.linear).call( -> window.app.stage.removeChild(child)))(child)
+			else if child != bitmap
 				r = Math.random()
 				s = 1
 				if Math.random() < .5
@@ -160,11 +159,11 @@ handleImageLoad = (e, id, x, y) ->
 				s2 = 1
 				if Math.random() < .5
 					s2 = -1
-				createjs.Tween.get(child).to({
+				( (child) -> createjs.Tween.get(child).to({
 					x: window.app.canvas.width * 1.1 * Math.cos(r) * s
 					y: window.app.canvas.width * 1.1 * Math.sin(r) * s2
 					rotation: 720
-					}, 1000, createjs.Ease.linear)
+					}, 1000, createjs.Ease.linear).call( -> window.app.stage.removeChild(child)))(child)
 		createjs.Tween.get(bitmap).to({
 			x: window.app.canvas.width / 2
 			y: window.app.canvas.height / 2
@@ -185,7 +184,6 @@ createBackground = (bitmap) ->
 		i.src = "/static/images/" + bitmap.image.src.split("thumb_")[1]
 	else
 		i.src = bitmap.image.src
-	window.app.stage.removeAllChildren()
 	i.onload = (e) ->
 		window.app.loading = true
 		b = new createjs.Bitmap(e.target)
@@ -198,11 +196,12 @@ createBackground = (bitmap) ->
 		b.scaleX = b.scaleY = b.image.scale = window.app.canvas.width * 1.2 / b.image.width
 		b.skewY = 90
 		b.skewX = 0
+		b.name = 'bg'
 		createjs.Tween.get(b).to({
 		skewY: 0
 		alpha: 0.3
-		}, 1000, createjs.Ease.linear).call(-> window.app.loading = false)
-		window.app.stage.addChild(b)		
+		}, 1000, createjs.Ease.linear).call
+		window.app.stage.addChild(b)
 		#$.getJSON "/find-by-id/" + bitmap.image.src.split("bldg")[1].split("x")[0], (response) ->
 			# here we can display all the information about the building
 
@@ -258,6 +257,7 @@ tick = (event) ->
 				}, 10, createjs.Ease.linear).call( -> randomizeProperties(bitmap))
 	window.app.parallax.dx = 0
 	window.app.parallax.dy = 0
+	window.app.parallax.oldX = undefined
 	window.app.stage.update()
 
 $ ->
