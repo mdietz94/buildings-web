@@ -3,6 +3,7 @@ init = ->
 	window.app.bitmaps = []
 	window.app.canvas = document.getElementById("canvas")
 	window.app.stage = new createjs.Stage(window.app.canvas)
+	window.app.stage.enableMouseOver(50)
 	$.getJSON "/static/images", (r) ->
 		files = r['files'].filter((f) -> f.match("thumb_bldg") )
 		console.log files
@@ -18,6 +19,13 @@ init = ->
 			bitmap.regY = bitmap.image.height/2|0
 			bitmap.scaleX = bitmap.scaleY = bitmap.scale = 128.0 / bitmap.image.width
 			bitmap.name = filename
+			bitmap.addEventListener 'mouseover', (e) ->
+				bitmap = e.target
+				bitmap.scaleX = bitmap.scaleY = bitmap.scale*1.2
+			bitmap.addEventListener 'mouseout', (e) ->
+				bitmap = e.target
+				bitmap.scaleX = bitmap.scaleY = bitmap.scale*(1/1.2)
+
 			window.app.bitmaps.push bitmap.name
 			window.app.stage.addChild(bitmap)
 			randomizeProperties(bitmap)
@@ -30,11 +38,12 @@ init = ->
 	#for img in window.app.bitmaps
 		
 randomizeProperties = (bitmap) ->
-	console.log 'randomizing'
 	createjs.Tween.get(bitmap).to({
 		x: window.app.canvas.width * .9 * Math.random()
 		y: window.app.canvas.height * .9 * Math.random()
 		rotation: 360 * .9 * Math.random()
+		skewX: 30 * Math.random()
+		skewY: 30 * Math.random()
 		}, 10000 * (Math.random() * .4 + .6), createjs.Ease.linear).call( -> randomizeProperties(bitmap))
 
 
