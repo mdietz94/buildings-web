@@ -138,6 +138,7 @@ handleImageLoad = (e, id, x, y) ->
 	bitmap.regY = bitmap.image.height*bitmap.scaleY  /2
 	bitmap.rotation = 0
 	bitmap.velocities = {x: 0, y: 0 }
+	bitmap.shadow = new createjs.Shadow("#000000", 0, 0, 8);
 	bitmap.addEventListener 'mouseover', (e) ->
 		bitmap = e.target
 		bitmap.scaleX = bitmap.scaleY = bitmap.scale*1.2
@@ -233,13 +234,17 @@ tick = (event) ->
 	#all movement should be event.delta/1000 * pixelsPerSecond
 	window.app.stage.clear()
 	for bitmap in window.app.stage.children
-		if bitmap.name != 'bg'
-			g = new createjs.Graphics()
-			g.beginStroke("rgba(0,0,0,0.3)")
-			.setStrokeStyle(1, "round")
-			.beginFill("#000").drawRect(bitmap.x - bitmap.image.width*.6 * bitmap.scaleX, bitmap.y - bitmap.image.height*.6 *bitmap.scaleY,bitmap.image.width * bitmap.scaleX * 1.2, bitmap.image.height *bitmap.scaleY * 1.2)
-			.draw(context)
-		else
+		#if bitmap.name != 'bg'
+		#	g = new createjs.Graphics()
+		#	g.beginStroke("rgba(0,0,0,0.3)")
+		#	.setStrokeStyle(1, "round")
+		#	.beginFill("#000").drawRect(bitmap.x - bitmap.image.width*.6 * bitmap.scaleX, bitmap.y - bitmap.image.height*.6 *bitmap.scaleY,bitmap.image.width * bitmap.scaleX * 1.2, bitmap.image.height *bitmap.scaleY * 1.2)
+		#	.draw(context)
+		if bitmap.shadow
+			createjs.Tween.get(bitmap.shadow).to({
+				offsetX: bitmap.shadow.offsetX + window.app.parallax.dx * bitmap.parallaxFactor
+				offsetY: bitmap.shadow.offsetY + window.app.parallax.dy * bitmap.parallaxFactor
+				}, 10, createjs.Ease.linear)
 		createjs.Tween.get(bitmap).to({
 			x: bitmap.x + window.app.parallax.dx * bitmap.parallaxFactor
 			y: bitmap.y + window.app.parallax.dy * bitmap.parallaxFactor
