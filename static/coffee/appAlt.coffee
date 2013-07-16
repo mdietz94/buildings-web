@@ -45,7 +45,7 @@ class BuildingGrid extends Backbone.Collection
 			context.trigger('change:query')
 		@first = false
 
-Buildings = new BuildingGrid
+#Buildings = new BuildingGrid
 
 class BuildingsView extends Backbone.View
 
@@ -334,47 +334,50 @@ addBuilding = (building) ->
 			alert("An error has occured!")
 	}
 
+init = ->
+	window.app = {}
+	window.app.bitmaps = []
+	window.app.stage = new createjs.Stage(document.getElementById("canvas"))
+	$.getJSON "/static/images", (r) ->
+		files = r['files'].filter((f) -> f.match("x0.jpg") )
+		i = 0
+		for filename in files
+			i += 1
+			bitmap = new createjs.Bitmap("/static/images/" + filename)
+			bitmap.scaleX = .1
+			bitmap.scaleY = .1
+			window.app.stage.addChild(bitmap)
+			window.app.bitmaps += bitmap
+			break if i == 11
+	window.app.g = new createjs.Shape()
+	window.app.stage.addChild(window.app.g)
+	createjs.Ticker.setFPS(30)
+	createjs.Ticker.addEventListener 'tick', tick
+	console.log 'done'
+
+
+tick = (event) ->
+	# all movement should be event.delta/1000 * pixelsPerSecond
+	width = $("#canvas").css 'width'
+	height = $("#canvas").css 'height'
+	for img in window.app.bitmaps
+		createjs.Tween.get(img).to({x: width * Math.random()}, 2000)
+		createjs.Tween.get(img).to({y: height * Math.random()}, 2000)
+		window.app.g.graphics.beginStroke("#444")
+		.moveTo(width/2,height/2).setStrokeStyle(2, "round")
+		.beginFill("#000").lineTo(img.x, img.y)
+		.closePath()
+	window.app.stage.update()
+
+
 $ ->
-	Buildings.refresh()
-	BuildingView = new BuildingsView
-	new BuildingDetailView
+	#Buildings.refresh()
+	#BuildingView = new BuildingsView
+	#new BuildingDetailView
 
-	$("#search-bar").keyup (e) ->
-		if e.which == 13
-			console.log 'pressed'
-			Buildings.refresh()
-			BuildingView.clearTimers()
-
-
-	$("#login-form").hide()
-	$("#login-form-submit").click login
-	$("#login-form-register").click register
-	refreshUserInfo()
-	$("#building-list span").css 'opacity', 1
-	f = -> $("#building-list span").css 'opacity', .4
-	setTimeout f, 6000
-	$("#add-building").click ->
-		$("#building-detail").html("""
-		<textarea class="building-name" placeholder='name'></textarea>
-		<textarea class="building-architect" placeholder='architect'></textarea>
-		<textarea class="building-latitude" placeholder='latitude'></textarea>
-		<textarea class="building-longitude" placeholder='longitude'></textarea>
-		<textarea class="building-address" placeholder='address'></textarea>
-		<textarea class="building-region" placeholder='region'></textarea>
-		<textarea class="building-city" placeholder='city'></textarea>
-		<textarea class="building-state" placeholder='state'></textarea>
-		<textarea class="building-date" placeholder='date'></textarea>
-		<textarea class="building-description" placeholder='description'></textarea>
-		<textarea class="building-keywords" placeholder='keywords (separate with semi-colons or whitespace )'></textarea>
-		<input id="submit-button" type='submit' value='Submit'></input>
-		<input id="cancel-button" type='submit' value='Cancel'></input>
-		""")
-		$("#cancel-button").click ->
-			$("#building-detail").html ''
-		$("#submit-button").click ->
-			addBuilding { name: $(".building-name").val(), architect: $(".building-architect").val(), 
-			latitude: $(".building-latitude").val(), longitude: $(".building-longitude").val(), 
-			address: $(".building-address").val(), region: $(".building-region").val(), 
-			city: $(".building-city").val(), state: $(".building-state").val(), 
-			date: $(".building-date").val(), description: $(".building-description").val(),
-			keywords: $(".building-keywords").val() }
+	#$("#search-bar").keyup (e) ->
+	#	if e.which == 13
+	#		console.log 'pressed'
+	#		Buildings.refresh()
+	#		BuildingView.clearTimers()
+	init()

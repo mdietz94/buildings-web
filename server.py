@@ -41,7 +41,9 @@ def add_image(uid):
         return abort(500)
     return simplejson.dumps({ 'message': 'OK' })
         
-
+@app.route("/static/images")
+def all_images():
+    return simplejson.dumps({ 'files': os.listdir('./static/images') })
 
 @app.route("/username")
 def username():

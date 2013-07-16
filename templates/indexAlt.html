@@ -7,28 +7,18 @@
 		<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js"></script>
-		<script src="/static/js/spin.min.js" type="text/javascript"></script>
-		<script src="/static/js/jquery.spin.js" type="text/javascript"></script>
+		<!-- Contains EaselJS TweenJS SoundJS and PreloadJS -->
+		<script src="http://code.createjs.com/createjs-2013.05.14.min.js"></script>
 		<script src="/static/js/appAlt.js" type="text/javascript"></script>
 		<link href='http://fonts.googleapis.com/css?family=Sonsie+One' rel='stylesheet' type='text/css'>
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" type="text/css" href="/static/css/stylesAlt.css"></link>
 	</head>
 	<body>
-		<div id="login-form">
-        	<input id="login-form-username" type='text' name='username'></input><br />
-            <input id="login-form-password" type='password' name='password'></input><br />
-            <input id="login-form-submit" type='submit' value='Login'></input>
-            <input id="login-form-register" type='submit' value='Register'></input>
-        </div>
 		<div id="header">
 			<h1>bldg</h1>
 			<input type="text" id="search-bar" placeholder="Search here..."></input>
-			<span class="tooltip" id="add-building"><img height="30px" width="30px" href="#add" src="/static/images/plus.png"></img><span class="arrow-up"></span><span>Add a building</span></span>
-			<div id="login-info"><p></p><a href="#">Login</a></div>
 		</div>
-		<div id="building-list"></div>
-		<div id="background-grid"></div>
-		<div id="building-detail"></div>
+		<canvas id="canvas"></canvas>
 	</body>
 </html>
