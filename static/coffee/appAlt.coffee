@@ -47,9 +47,21 @@ init = ->
 		window.app.parallax.oldY = e.stageY
 	window.app.floating = true
 	Buildings.on 'reset', refresh
+	bg = new Image()
+	bg.src = "/static/images/bldg0x0.jpg"
+	bg.onload = (e) ->
+		bitmap = new createjs.Bitmap(e.target)
+		bitmap.regX = bitmap.image.width / 2
+		bitmap.regY = bitmap.image.height / 2
+		bitmap.scaleX = bitmap.scaleY = bitmap.image.scale = 2 * document.width / bitmap.image.width
+		bitmap.x = document.width / 2
+		bitmap.y = document.height / 2
+		bitmap.parallaxFactor = .1
+		bitmap.name = 'bg'
+		window.app.stage.addChild(bitmap)
+		window.app.bitmaps.push(bitmap.name)
 	$.getJSON "/static/images", (r) ->
 		files = r['files'].filter((f) -> f.match("thumb_bldg") )
-		console.log files
 		i = 0
 		x = 100
 		y = 100
@@ -62,8 +74,8 @@ init = ->
 			if x > document.width
 				x = 100
 				y += 200
-		createjs.Ticker.setFPS(30)
-		createjs.Ticker.addEventListener 'tick', tick
+	createjs.Ticker.setFPS(30)
+	createjs.Ticker.addEventListener 'tick', tick
 
 refresh = ->
 	if window.app.first
@@ -93,7 +105,6 @@ refresh = ->
 			files = r['files']
 			for id in ids
 				children = window.app.stage.children.map((c) -> c.name.split("bldg")[1].split("x")[0])
-				console.log children
 				if children.indexOf("#{id}") < 0
 					img = new Image()
 					if "bldg" + id + "x0.jpg" in files
@@ -113,9 +124,7 @@ refresh = ->
 
 
 handleImageLoad = (e, id, x, y) ->
-	console.log e
 	bitmap = new createjs.Bitmap(e.target)
-	console.log bitmap.image.height
 	bitmap.scaleX = bitmap.scaleY = bitmap.scale = Math.min(128.0 / bitmap.image.width, 128.0 / bitmap.image.height)
 	if id
 		bitmap.name = "/static/images/bldg" + id + "x0.jpg"
@@ -136,7 +145,6 @@ handleImageLoad = (e, id, x, y) ->
 		bitmap = e.target
 		bitmap.scaleX = bitmap.scaleY = bitmap.scale*(1/1.2)
 	bitmap.addEventListener 'click', (e) ->
-		console.log window.app.bitmaps
 		bitmap = e.target
 		window.app.bitmaps = []
 		window.app.floating = false
@@ -225,15 +233,17 @@ tick = (event) ->
 	#all movement should be event.delta/1000 * pixelsPerSecond
 	window.app.stage.clear()
 	for bitmap in window.app.stage.children
-		g = new createjs.Graphics()
-		g.beginStroke("rgba(0,0,0,0.3)")
-		.setStrokeStyle(1, "round")
-		.beginFill("#000").drawRect(bitmap.x - bitmap.image.width*.6 * bitmap.scaleX, bitmap.y - bitmap.image.height*.6 *bitmap.scaleY,bitmap.image.width * bitmap.scaleX * 1.2, bitmap.image.height *bitmap.scaleY * 1.2)
-		.draw(context)
+		if bitmap.name != 'bg'
+			g = new createjs.Graphics()
+			g.beginStroke("rgba(0,0,0,0.3)")
+			.setStrokeStyle(1, "round")
+			.beginFill("#000").drawRect(bitmap.x - bitmap.image.width*.6 * bitmap.scaleX, bitmap.y - bitmap.image.height*.6 *bitmap.scaleY,bitmap.image.width * bitmap.scaleX * 1.2, bitmap.image.height *bitmap.scaleY * 1.2)
+			.draw(context)
+		else
 		createjs.Tween.get(bitmap).to({
 			x: bitmap.x + window.app.parallax.dx * bitmap.parallaxFactor
 			y: bitmap.y + window.app.parallax.dy * bitmap.parallaxFactor
-			}, 10), createjs.Ease.linear).call( -> randomizeProperties(bitmap))
+			}, 10, createjs.Ease.linear).call( -> randomizeProperties(bitmap))
 	window.app.parallax.dx = 0
 	window.app.parallax.dy = 0
 	window.app.stage.update()
