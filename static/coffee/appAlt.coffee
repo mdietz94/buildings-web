@@ -38,11 +38,17 @@ init = ->
 		files = r['files'].filter((f) -> f.match("thumb_bldg") )
 		console.log files
 		i = 0
+		x = 100
+		y = 100
 		for i in [0..20]
 			filename = files[_.random(files.length)]
 			img = new Image()
 			img.src = "/static/images/" + filename
-			img.onload = handleImageLoad
+			( (xx,xy) -> img.onload = ( (e) -> handleImageLoad(e,filename.split("bldg")[1].split("x")[0], xx, xy)) )(x,y)
+			x += 200
+			if x > document.width
+				x = 100
+				y += 200
 		createjs.Ticker.setFPS(30)
 		createjs.Ticker.addEventListener 'tick', tick
 
@@ -93,19 +99,21 @@ refresh = ->
 
 
 
-handleImageLoad = (e, id) ->
+handleImageLoad = (e, id, x, y) ->
 	console.log e
 	bitmap = new createjs.Bitmap(e.target)
 	console.log bitmap.image.height
-	bitmap.scaleX = bitmap.scaleY = bitmap.scale = 128.0 / bitmap.image.width
+	bitmap.scaleX = bitmap.scaleY = bitmap.scale = Math.min(128.0 / bitmap.image.width, 128.0 / bitmap.image.height)
 	if id
 		bitmap.name = "/static/images/bldg" + id + "x0.jpg"
 	else
 		bitmap.name = bitmap.image.src
-	window.app.bitmaps.push bitmap.name
+	
+	bitmap.x = x|0
+	bitmap.y = y|0
 	bitmap.regX = bitmap.image.width*bitmap.scaleX  /2
 	bitmap.regY = bitmap.image.height*bitmap.scaleY  /2
-	bitmap.rotation = _.random(-10,10)
+	bitmap.rotation = 0
 	bitmap.velocities = {x: 0, y: 0 }
 	bitmap.addEventListener 'mouseover', (e) ->
 		bitmap = e.target
@@ -171,6 +179,7 @@ createBackground = (bitmap) ->
 
 
 randomizeProperties = (bitmap) ->
+	window.app.floating = false
 	if window.app.floating
 		if bitmap.x + bitmap.image.width/2 * bitmap.scaleX > window.app.canvas.width or bitmap.x - bitmap.image.width/2 * bitmap.scaleX < 0
 			bitmap.velocities.x = -bitmap.velocities.x * .7
@@ -200,15 +209,13 @@ tick = (event) ->
 	$("#canvas").attr 'height', (document.height - 75) + "px"
 	context = window.app.canvas.getContext('2d')
 	#all movement should be event.delta/1000 * pixelsPerSecond
-	#window.app.stage.clear()
-	for bitmapName in window.app.bitmaps
-		bitmap = window.app.stage.getChildByName(bitmapName)
-		if bitmap
-			g = new createjs.Graphics()
-			g.beginStroke("rgba(0,0,0,0.3)")
-			.moveTo(window.app.canvas.width / 2,-100).setStrokeStyle(1, "round")
-			.beginFill("#000").lineTo(bitmap.x, bitmap.y)
-			.draw(context)
+	window.app.stage.clear()
+	for bitmap in window.app.stage.children
+		g = new createjs.Graphics()
+		g.beginStroke("rgba(0,0,0,0.3)")
+		.setStrokeStyle(1, "round")
+		.beginFill("#000").drawRect(bitmap.x - bitmap.image.width*.6 * bitmap.scaleX, bitmap.y - bitmap.image.height*.6 *bitmap.scaleY,bitmap.image.width * bitmap.scaleX * 1.2, bitmap.image.height *bitmap.scaleY * 1.2)
+		.draw(context)
 	window.app.stage.update()
 
 $ ->
