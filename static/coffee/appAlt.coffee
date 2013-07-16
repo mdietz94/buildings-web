@@ -1,3 +1,8 @@
+#
+# Just in general sloppy code, needs rewrite, like for instance, we should only be ticking when things change
+# not a big deal for the moment but huge for deployment
+#
+
 class Building extends Backbone.Model
 	initialize: ->
 		if !this.get('description')
@@ -32,6 +37,14 @@ init = ->
 	window.app.stage = new createjs.Stage(window.app.canvas)
 	window.app.stage.enableMouseOver(50)
 	window.app.stage.autoClear = false
+	window.app.parallax = {dx: 0, dy: 0}
+	window.app.stage.addEventListener 'stagemousemove', (e) ->
+		# Lets do some parallax
+		if window.app.parallax.oldX
+			window.app.parallax.dx = window.app.parallax.oldX - e.stageX
+			window.app.parallax.dy = window.app.parallax.oldY - e.stageY
+		window.app.parallax.oldX = e.stageX
+		window.app.parallax.oldY = e.stageY
 	window.app.floating = true
 	Buildings.on 'reset', refresh
 	$.getJSON "/static/images", (r) ->
@@ -111,6 +124,7 @@ handleImageLoad = (e, id, x, y) ->
 	
 	bitmap.x = x|0
 	bitmap.y = y|0
+	bitmap.parallaxFactor = 0.02
 	bitmap.regX = bitmap.image.width*bitmap.scaleX  /2
 	bitmap.regY = bitmap.image.height*bitmap.scaleY  /2
 	bitmap.rotation = 0
@@ -216,6 +230,12 @@ tick = (event) ->
 		.setStrokeStyle(1, "round")
 		.beginFill("#000").drawRect(bitmap.x - bitmap.image.width*.6 * bitmap.scaleX, bitmap.y - bitmap.image.height*.6 *bitmap.scaleY,bitmap.image.width * bitmap.scaleX * 1.2, bitmap.image.height *bitmap.scaleY * 1.2)
 		.draw(context)
+		createjs.Tween.get(bitmap).to({
+			x: bitmap.x + window.app.parallax.dx * bitmap.parallaxFactor
+			y: bitmap.y + window.app.parallax.dy * bitmap.parallaxFactor
+			}, 10), createjs.Ease.linear).call( -> randomizeProperties(bitmap))
+	window.app.parallax.dx = 0
+	window.app.parallax.dy = 0
 	window.app.stage.update()
 
 $ ->
