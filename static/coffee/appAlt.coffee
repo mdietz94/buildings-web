@@ -103,10 +103,14 @@ refresh = ->
 	# though because we accounted for the aspect ratio, this should basically be the same number, we'll just pick the smaller.
 	#  b.scaleX = b.scaleY = b.image.scale = img_max_size / Math.max(b.image.width, b.image.height)
 	numberOfRows = Math.ceil(Math.sqrt(num / aspectRatio))
-	numberOfCols = Math.ceil(numberOfRows * aspectRatio)
-	img_size_and_margins = Math.min(window.app.canvas.width / numberOfRows, window.app.canvas.height / numberOfCols)
+	numberOfCols = Math.ceil(num / numberOfRows)
+	console.log "Nums: #{num}"
+	console.log "Rows: #{numberOfRows}"
+	console.log "Cols: #{numberOfCols}"
+	img_size_and_margins = Math.floor(Math.min(window.app.canvas.width / numberOfCols, window.app.canvas.height / numberOfRows))
 	margin = 5
 	img_size = img_size_and_margins - margin
+	console.log "Size: #{img_size}"
 	toRemove = []
 	cx = img_size / 2 + margin
 	cy = img_size / 2 + margin
@@ -118,7 +122,13 @@ refresh = ->
 				createjs.Tween.get(child).to({skewX: 90}, 1000, createjs.Ease.linear)
 				toRemove.push child
 			else
-				createjs.Tween.get(child).to({x: cx, y: cy}, 1000, createjs.Ease.linear)
+				child.oX = cx
+				child.oY = cy
+				createjs.Tween.get(child).to({
+					x: cx
+					y: cy
+					scaleX: img_size / Math.max(child.image.height,child.image.width)
+					scaleY: img_size / Math.max(child.image.height,child.image.width)}, 1000, createjs.Ease.linear)
 				cx += img_size_and_margins
 				if cx > window.app.canvas.width
 					cx = img_size / 2 + margin
@@ -131,6 +141,7 @@ refresh = ->
 			if c
 				return c.split("x")[0]
 			undefined )
+		console.log "Size: #{img_size}"
 		for id in ids
 			if children.indexOf("#{id}") < 0
 				img = new Image()
@@ -138,13 +149,13 @@ refresh = ->
 					img.src = "/static/images/thumb_bldg" + id + "x0.jpg"
 				else
 					img.src = "/static/images/thumb_bldg0x0.jpg"
-				((i, xx, xy) ->
-					img.onload = (e) -> handleImageLoad(e, i, xx, xy)
-				)(id, x, y)
-				x += 200
-				if x > window.app.canvas.width
-					x = 100
-					y += 200
+				((i, xx, xy, xsize) ->
+					img.onload = (e) -> handleImageLoad(e, i, xx, xy, xsize)
+				)(id, cx, cy, img_size)
+				cx += img_size_and_margins
+				if cx > window.app.canvas.width
+					cx = img_size / 2 + margin
+					cy += img_size_and_margins
 	((toRemove) ->
 		setTimeout(( ->
 			for r in toRemove
@@ -153,13 +164,17 @@ refresh = ->
 	)(toRemove)
 
 
-handleImageLoad = (e, id, x, y) ->
+handleImageLoad = (e, id, x, y, img_size) ->
 	bitmap = new createjs.Bitmap(e.target)
 	bitmap.x = bitmap.oX = x|0
 	bitmap.y = bitmap.oY = y|0
 	bitmap.regX = bitmap.image.width / 2
 	bitmap.regY = bitmap.image.height / 2
-	bitmap.scaleX = bitmap.scaleY = bitmap.image.scale = 128.0 / Math.max(bitmap.image.height,bitmap.image.width)
+	if img_size > 0
+		sz = img_size
+	else
+		sz = 128
+	bitmap.scaleX = bitmap.scaleY = bitmap.image.scale = sz / Math.max(bitmap.image.height,bitmap.image.width)
 	if id
 		bitmap.name = "/static/images/bldg" + id + "x0.jpg"
 	else
@@ -206,9 +221,8 @@ handleImageLoad = (e, id, x, y) ->
 			skewY: 90
 			}, 1000, createjs.Ease.linear)
 		setTimeout ( -> createBackground(bitmap) ), 1000
-
 	window.app.stage.addChild(bitmap)
-	randomizeProperties(bitmap)
+	#randomizeProperties(bitmap)
 
 createBackground = (bitmap) ->
 	i = new Image()
@@ -232,7 +246,7 @@ createBackground = (bitmap) ->
 		createjs.Tween.get(b).to({
 		skewY: 0
 		alpha: 0.3
-		}, 1000, createjs.Ease.linear).call
+		}, 1000, createjs.Ease.linear)
 		window.app.stage.addChild(b)
 		#$.getJSON "/find-by-id/" + bitmap.image.src.split("bldg")[1].split("x")[0], (response) ->
 			# here we can display all the information about the building
