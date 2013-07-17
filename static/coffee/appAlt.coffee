@@ -40,12 +40,8 @@ init = ->
 	window.app.stage.autoClear = false
 	window.app.parallax = {dx: 0, dy: 0}
 	window.app.stage.addEventListener 'stagemousemove', (e) ->
-		# Lets do some parallax
-		if window.app.parallax.oldX
-			window.app.parallax.dx = window.app.parallax.oldX - e.stageX
-			window.app.parallax.dy = window.app.parallax.oldY - e.stageY
-		window.app.parallax.oldX = e.stageX
-		window.app.parallax.oldY = e.stageY
+		window.app.parallax.dx = window.app.canvas.width / 2 - e.stageX
+		window.app.parallax.dy = window.app.canvas.height / 2 - e.stageY
 	window.app.floating = true
 	Buildings.on 'reset', refresh
 	bg = new Image()
@@ -55,8 +51,8 @@ init = ->
 		bitmap.regX = bitmap.image.width / 2
 		bitmap.regY = bitmap.image.height / 2
 		bitmap.scaleX = bitmap.scaleY = bitmap.image.scale = 2 * document.width / bitmap.image.width
-		bitmap.x = document.width / 2
-		bitmap.y = document.height / 2
+		bitmap.x = bitmap.oX = document.width / 2
+		bitmap.y = bitmap.oY = document.height / 2
 		bitmap.alpha = .3
 		bitmap.parallaxFactor = .1
 		bitmap.name = 'bg'
@@ -128,8 +124,8 @@ handleImageLoad = (e, id, x, y) ->
 	else
 		bitmap.name = bitmap.image.src
 	
-	bitmap.x = x|0
-	bitmap.y = y|0
+	bitmap.x = bitmap.oX = x|0
+	bitmap.y = bitmap.oY = y|0
 	bitmap.parallaxFactor = 0.02
 	bitmap.regX = bitmap.image.width*bitmap.scaleX  /2
 	bitmap.regY = bitmap.image.height*bitmap.scaleY  /2
@@ -187,8 +183,8 @@ createBackground = (bitmap) ->
 	i.onload = (e) ->
 		window.app.loading = true
 		b = new createjs.Bitmap(e.target)
-		b.x = window.app.canvas.width / 2
-		b.y = window.app.canvas.height / 2
+		b.x = b.oX = window.app.canvas.width / 2
+		b.y = b.oY = window.app.canvas.height / 2
 		b.regX = b.image.width/2
 		b.regY = b.image.height/2
 		b.parallaxFactor = .1
@@ -248,16 +244,13 @@ tick = (event) ->
 			#	.draw(context)
 			if bitmap.shadow
 				createjs.Tween.get(bitmap.shadow).to({
-					offsetX: bitmap.shadow.offsetX + window.app.parallax.dx * bitmap.parallaxFactor
-					offsetY: bitmap.shadow.offsetY + window.app.parallax.dy * bitmap.parallaxFactor
+					offsetX: window.app.parallax.dx * bitmap.parallaxFactor
+					offsetY: window.app.parallax.dy * bitmap.parallaxFactor
 					}, 10, createjs.Ease.linear)
 			createjs.Tween.get(bitmap).to({
-				x: bitmap.x + window.app.parallax.dx * bitmap.parallaxFactor
-				y: bitmap.y + window.app.parallax.dy * bitmap.parallaxFactor
+				x: bitmap.oX + window.app.parallax.dx * bitmap.parallaxFactor
+				y: bitmap.oY + window.app.parallax.dy * bitmap.parallaxFactor
 				}, 10, createjs.Ease.linear).call( -> randomizeProperties(bitmap))
-	window.app.parallax.dx = 0
-	window.app.parallax.dy = 0
-	window.app.parallax.oldX = undefined
 	window.app.stage.update()
 
 $ ->
