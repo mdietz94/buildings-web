@@ -61,23 +61,55 @@ init = ->
 	$.getJSON "/static/images", (r) ->
 		files = r['files'].filter((f) -> f.match("thumb_bldg") )
 		i = 0
-		x = 100
-		y = 100
+		x = 64 + 10
+		y = 64 + 10
+		filename = undefined
 		for i in [0..20]
 			filename = files[_.random(files.length)]
+			while filename == undefined
+				filename = files[_.random(files.length)]
+				console.log filename
 			img = new Image()
 			img.src = "/static/images/" + filename
 			( (xx,xy) -> img.onload = ( (e) -> handleImageLoad(e,filename.split("bldg")[1].split("x")[0], xx, xy)) )(x,y)
-			x += 200
+			x += 128 + 10
 			if x > document.width
-				x = 100
-				y += 200
+				x = 64 + 10
+				y += 128 + 10
 	createjs.Ticker.setFPS(30)
 	createjs.Ticker.addEventListener 'tick', tick
 
 refresh = ->
+	# to do anything meaningful we need to know how many there are
+	# and that way we can scale all pictures so that they will fit + margin
+	# but we also need to be mindful about pictures that already exist
+
+	# we should probably move those to the top left and then we'll know what our
+	# x and y are for when we start adding new buildings
+
+	# also clearly we need a threshold size after which we add detailed information
+	# the thumbnails are great for when there will be a ton of them though
 	ids = Buildings.models.map( (m) -> "#{m.get('id')}" )
+	num = ids.length
+	aspectRatio = window.app.canvas.width / window.app.canvas.height
+	# if aspectRatio were 2, we'd want twice as many columns as rows
+	# and we would know that numberOfRows * aspectRatio = numberOfColumns (with some usage of Math.floor)
+	# and the number of images total is equal to numberOfRows * numberOfColumns
+	# so if we have the total number of images and the aspect ratio, we have
+	#  num = numberOfRows * numberOfRows * aspectRatio
+	#  numberOfRows = Math.ceil(Math.sqrt(num / aspectRatio)) # because an extra row never killed, but one too few did once
+	#  numberOfColumns = Math.ceil(numberOfRows * aspectRatio)
+	# This makes the average image size the canvas height divided by the number of rows, and the width the same for columns
+	# though because we accounted for the aspect ratio, this should basically be the same number, we'll just pick the smaller.
+	#  b.scaleX = b.scaleY = b.image.scale = img_max_size / Math.max(b.image.width, b.image.height)
+	numberOfRows = Math.ceil(Math.sqrt(num / aspectRatio))
+	numberOfCols = Math.ceil(numberOfRows * aspectRatio)
+	img_size_and_margins = Math.min(window.app.canvas.width / numberOfRows, window.app.canvas.height / numberOfCols)
+	margin = 5
+	img_size = img_size_and_margins - margin
 	toRemove = []
+	cx = img_size / 2 + margin
+	cy = img_size / 2 + margin
 	for child in window.app.stage.children
 		n = child.name.split("bldg")[1]
 		if n
@@ -85,10 +117,15 @@ refresh = ->
 			if ids.indexOf(n) < 0
 				createjs.Tween.get(child).to({skewX: 90}, 1000, createjs.Ease.linear)
 				toRemove.push child
+			else
+				createjs.Tween.get(child).to({x: cx, y: cy}, 1000, createjs.Ease.linear)
+				cx += img_size_and_margins
+				if cx > window.app.canvas.width
+					cx = img_size / 2 + margin
+					cy += img_size_and_margins
+
 	$.getJSON "/static/images", (r) ->
 		files = r['files']
-		x = 100
-		y = 100
 		children = window.app.stage.children.map((c) ->
 			c = c.name.split("bldg")[1]
 			if c
@@ -105,7 +142,7 @@ refresh = ->
 					img.onload = (e) -> handleImageLoad(e, i, xx, xy)
 				)(id, x, y)
 				x += 200
-				if x + 200 > window.app.canvas.width
+				if x > window.app.canvas.width
 					x = 100
 					y += 200
 	((toRemove) ->
@@ -118,17 +155,16 @@ refresh = ->
 
 handleImageLoad = (e, id, x, y) ->
 	bitmap = new createjs.Bitmap(e.target)
-	bitmap.scaleX = bitmap.scaleY = bitmap.scale = Math.min(128.0 / bitmap.image.width, 128.0 / bitmap.image.height)
+	bitmap.x = bitmap.oX = x|0
+	bitmap.y = bitmap.oY = y|0
+	bitmap.regX = bitmap.image.width / 2
+	bitmap.regY = bitmap.image.height / 2
+	bitmap.scaleX = bitmap.scaleY = bitmap.image.scale = 128.0 / Math.max(bitmap.image.height,bitmap.image.width)
 	if id
 		bitmap.name = "/static/images/bldg" + id + "x0.jpg"
 	else
 		bitmap.name = bitmap.image.src
-	
-	bitmap.x = bitmap.oX = x|0
-	bitmap.y = bitmap.oY = y|0
 	bitmap.parallaxFactor = 0.02
-	bitmap.regX = bitmap.image.width*bitmap.scaleX  /2
-	bitmap.regY = bitmap.image.height*bitmap.scaleY  /2
 	bitmap.rotation = 0
 	bitmap.velocities = {x: 0, y: 0 }
 	bitmap.shadow = new createjs.Shadow("#000000", 0, 0, 8);
@@ -136,10 +172,10 @@ handleImageLoad = (e, id, x, y) ->
 	setTimeout( ( -> createjs.Tween.get(bitmap).to({ skewX: 0 }, 1000, createjs.Ease.linear) ), 1000 )
 	bitmap.addEventListener 'mouseover', (e) ->
 		bitmap = e.target
-		bitmap.scaleX = bitmap.scaleY = bitmap.scale*1.2
+		bitmap.scaleX = bitmap.scaleY = bitmap.image.scale = bitmap.image.scale*1.2
 	bitmap.addEventListener 'mouseout', (e) ->
 		bitmap = e.target
-		bitmap.scaleX = bitmap.scaleY = bitmap.scale*(1/1.2)
+		bitmap.scaleX = bitmap.scaleY = bitmap.image.scale = bitmap.image.scale*(1/1.2)
 	bitmap.addEventListener 'click', (e) ->
 		bitmap = e.target
 		window.app.bitmaps = []
@@ -244,8 +280,8 @@ tick = (event) ->
 			#	.draw(context)
 			if bitmap.shadow
 				createjs.Tween.get(bitmap.shadow).to({
-					offsetX: window.app.parallax.dx * bitmap.parallaxFactor
-					offsetY: window.app.parallax.dy * bitmap.parallaxFactor
+					offsetX: window.app.parallax.dx * bitmap.parallaxFactor / 10
+					offsetY: window.app.parallax.dy * bitmap.parallaxFactor / 10
 					}, 10, createjs.Ease.linear)
 			createjs.Tween.get(bitmap).to({
 				x: bitmap.oX + window.app.parallax.dx * bitmap.parallaxFactor
