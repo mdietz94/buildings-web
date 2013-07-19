@@ -108,7 +108,7 @@ refresh = ->
 	console.log "Rows: #{numberOfRows}"
 	console.log "Cols: #{numberOfCols}"
 	img_size_and_margins = Math.floor(Math.min(window.app.canvas.width / numberOfCols, window.app.canvas.height / numberOfRows))
-	margin = 5
+	margin = 1
 	img_size = img_size_and_margins - margin
 	console.log "Size: #{img_size}"
 	toRemove = []
