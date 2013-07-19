@@ -4,13 +4,27 @@ class Building extends Backbone.Model
 			this.set {'description': "Contribute a description to this building." }
 		if !this.get('architect')
 			this.set {'architect': "Unknown Architect"}
+		if !this.get('enabled')
+			this.set { 'enabled': true }
 
-class BuildingList extends Backbone.Collection
+# # #
+# BuildingGrid will store all the buildings returned by the first search query
+# and afterwards, will just set buildings.enabled to represent whether each
+# building is still relevant to the query.  That way there will be a difference
+# between the background buildings that were never relevant and buildings that
+# we can fade out to show they were relevant but were since queried against.
+# # #
+class BuildingGrid extends Backbone.Collection
 	model: Building
-
 	initialize: ->
-		this.selectionType = "position"
-
+		@query = ''
+		# The first time we will reset our collection to the returned response,
+		# but afterwards we will keep the collection, but change the enabled variable
+		@first = true
+	clear = ->
+		@query = ''
+	append = (additional) ->
+		@query += additional
 	select: (id) ->
 		building = this.get(id)
 		if building
@@ -18,48 +32,87 @@ class BuildingList extends Backbone.Collection
 			@selection = building
 			this.trigger('change:selection')
 	refresh: ->
-		switch this.selectionType
-			when "position"
-				navigator.geolocation?.getCurrentPosition (position) ->
-					lat =  position.coords.latitude
-					long = position.coords.longitude
-				if !lat or !long
-					lat = '40.7142'
-				long = '-74.0064' # nyc is default coordinates
-				context = this
-				console.log 'refreshing by position'
-				$.getJSON "/find-by-location/#{lat}/#{long}", (response) ->
-					context.reset(response)
-			when "text"
-				context = this
-				console.log "refreshing by text #{$("#search-bar").val()}"
-				$.getJSON "/find-by-name/#{$("#search-bar").val()}", (response) ->
-					context.reset(response)
+		context = this
+		# The search bar should clear when we hit enter,
+		# so we are treating queries like a stack
+		@query += $("#search-bar").val() + ' '
+		$.getJSON "/search/#{@query}", (response) ->
+			if context.first
+				context.reset response
+			else
+				ids = response.map (b) -> b['id']
+				context.reset (context.models.map (m) -> m.set( { 'enabled': false } ) if not m.get('id') in ids)
+			context.trigger('change:query')
+		@first = false
 
-Buildings = new BuildingList
+Buildings = new BuildingGrid
 
 class BuildingsView extends Backbone.View
 
 	initialize: ->
-		Buildings.bind 'reset', this.render
-		Buildings.bind 'change', this.render
+		#Buildings.bind 'reset', this.render
 		Buildings.bind 'change:selection', this.selectionChanged
-		this.render()
+		Buildings.bind 'change:query', this.queryChanged
+		context = this
+		backGrid = $("#background-grid")
+		backGrid.html ''
+		for i in [0..200]
+			$.ajax {
+				type: 'HEAD'
+				url: "/static/images/bldg#{i}x0.jpg"
+				id: i
+				success: ->
+					console.log @url
+					backGrid.append "<img width='64px' src='#{@url}' id='#{@id}'></img>"
+					console.log "added a pic"
+					$("#" + @id).css 'left', '50%'
+					$("#" + @id).css 'top', '50%'
+					loopRandom(@id)
+			}
+
+	randomizePosition = (id) ->
+		$("#" + id).css 'left', Math.floor(Math.random()*100) + "%"
+		$("#" + id).css 'top', Math.floor(Math.random()*100) + "%"
+
+	loopRandom = (id) ->
+		randomizePosition(id)
+		setTimeout ( -> loopRandom(id) ), 2000
+
+	clearTimers: ->
+		for i in [0..setTimeout(';')]
+			clearTimeout(i)
+		$("#background-grid img").css 'left', ''
+		$("#background-grid img").css 'top', ''
+		$("#background-grid img").css 'opacity', 0
+		setTimeout ( -> $("#background-grid img").addClass 'disabled' ), 2000
+		setTimeout ( -> $("#background-grid img").css 'opacity', .1 ), 3000
+		$("#background-grid").css 'z-index', -1
+
+	startTimers = ->
+		for elem in $("#background-grid img")
+			loopRandom(elem.id)
+		$("#background-grid").css 'z-index', 0
+		$("#background-grid img").css 'opacity', 1
+		$("#background-grid img").removeClass 'disabled'
 
 	render: ->
 		buildingList = $("#building-list")
-		buildingList.html ''
+		if Building.models?.length > 0
+			buildingList.html ''
+		else
+			buildingList.html '<span>bldg</span>'
 		for building in Buildings.models
-			buildingList.append("""
-			<li id=#{building.get('id')} class="building-list-item">
-				<div class="building-list-item-name">#{building.get('name')}</div>
-				<div class="building-list-item-architect">#{if building.get('architect') then building.get('architect') else ''}</div>
-				<div class="building-list-item-button">Edit</div>
-			</li>
-			""")
-		$(".building-list-item").click (e) ->
-			if e.target != $(".selected .building-list-item-button")[0]
-				actionItemClicked(e)
+			img_url = ''
+			$.ajax {
+				type: 'HEAD',
+				url: "/static/images/bldg#{building.get("id")}x0.jpg"
+				error: ->
+					buildingList.append("""<img id=#{building.get('id')} src="/static/images/0x0.jpg" class="building-list-item #{'disabled' if not building.get('enabled')}"></img>""")
+				success: ->
+					buildingList.append("""<img id=#{building.get('id')} src="/static/images/#{building.get("id")}x0.jpg" class="building-list-item #{'disabled' if not building.get('enabled')}"></img>""")
+			}
+		$(".building-list-item").bind 'click', (e) ->
+			actionItemClicked(e)
 
 	actionItemClicked = (event) ->
 		Buildings.select(event.currentTarget.id)
@@ -69,6 +122,26 @@ class BuildingsView extends Backbone.View
 		$("#" + Buildings.selection?.id).addClass 'selected'
 		$(".selected .building-list-item-button").unbind 'click'
 		$(".selected .building-list-item-button").bind 'click', BuildingDetailView.prototype.enableEditing
+
+	queryChanged: ->
+		$(".building-list-item").unbind 'click'
+		this.render()
+		enabledBldgs = _.filter(Building.models, (m) -> m.get('enabled'))
+		size = 90 / enabledBldgs.length
+		x = y = 0
+		for building in enabledBldgs
+			$("#" + building.get('id')).css 'left', x
+			$("#" + building.get('id')).css 'left', y
+			$("#" + building.get('id')).css 'height', size + '%'
+			$("#" + building.get('id')).css 'width', size + '%'
+			x += size
+			if x + size > 100
+				x = 0
+				y += size
+		$(".building-list-item:not(.disabled)").bind 'click', (e) ->
+			actionItemClicked(e)
+		
+
 
 class BuildingDetailView extends Backbone.View
 	initialize: ->
@@ -263,18 +336,23 @@ addBuilding = (building) ->
 
 $ ->
 	Buildings.refresh()
-	new BuildingsView
+	BuildingView = new BuildingsView
 	new BuildingDetailView
 
 	$("#search-bar").keyup (e) ->
-		Buildings.selectionType = "text"
-		Buildings.refresh()
+		if e.which == 13
+			console.log 'pressed'
+			Buildings.refresh()
+			BuildingView.clearTimers()
+
 
 	$("#login-form").hide()
 	$("#login-form-submit").click login
 	$("#login-form-register").click register
 	refreshUserInfo()
-
+	$("#building-list span").css 'opacity', 1
+	f = -> $("#building-list span").css 'opacity', .4
+	setTimeout f, 6000
 	$("#add-building").click ->
 		$("#building-detail").html("""
 		<textarea class="building-name" placeholder='name'></textarea>
