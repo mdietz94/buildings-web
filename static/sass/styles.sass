@@ -1,3 +1,8 @@
+body
+	background-image: url(/static/images/solarize.jpg)
+	background-repeat: no-repeat
+	background-size: auto 2000px
+	background-position: center top
 #container
 	position: absolute
 	left: 0px
@@ -11,15 +16,33 @@
 	top: 10px
 	left: 30px
 	width: 200px
-	z-index: 1
+	z-index: 10
 .building-element
-	display: inline
-	background-color: red
-	position: relative
-	border: 1px solid black
+	padding: 0
+	margin: 0
+	background-color: #ddd
 	width: 200px
 	height: 200px
 	overflow: hidden
+	margin-bottom: 5px
 	img
 		width: inherit
 		height: inherit
+		z-index: 1
+	.name
+		display: none
+		position: relative
+		top: -100px
+		z-index: 2
+	&:hover .name
+		display: block
+	&:hover img
+		opacity: .3
+/* Here are some modifiers for various alternate sizes. */
+.large
+	width: 400px
+	height: 400px
+.wide
+	width: 400px
+.tall
+	height: 400px

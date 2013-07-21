@@ -21,6 +21,7 @@ BuildingCollection.prototype.reset = function(newCollection){
 		bldgData = newCollection[i]
 		this.buildings.push(new Building(bldgData['id'], bldgData['name'], bldgData['architect']))
 	}
+	console.log(this.buildings)
 	$(this).trigger('reset')
 }
 

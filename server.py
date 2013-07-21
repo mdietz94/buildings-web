@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, g, session, app, Response, redirect, abort
+from flask import Flask, render_template, request, jsonify, g, session, app, Response, redirect, abort, send_from_directory
 from flask.ext.login import LoginManager, login_required, login_user, logout_user, current_user 
 import os
 import simplejson
@@ -69,7 +69,6 @@ def find_by_id(uid):
             return simplejson.dumps({'message': 'OK'})
         else:
             return simplejson.dumps({'message': 'Inadequate permissions'})
-
 
 @app.route("/find-by-location/<latitude>/<longitude>")
 def find_by_location(latitude, longitude):
