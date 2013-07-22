@@ -1,6 +1,6 @@
 function BuildingGrid(){
 	$("#container").masonry({ columnWidth: 200, itemSelector: ".building-element", gutter: 5 })
-	$("#bg").attr('src', '/static/images/bldg0x0.jpg')
+	$("#bg").css('background-image', 'url(/static/images/bldg0x0.jpg)')
 	$(Buildings).on('reset', null, this, this.reload)
 	$(Buildings).on('add', null, this, this.reload)
 	$(Buildings).on('clear', null, this, this.reload)

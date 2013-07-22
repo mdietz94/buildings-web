@@ -6,7 +6,7 @@ DetailView.prototype.load = function(id){
 	this.id = id
 	// in case we are using a placeholder image
 	var src = $("#" + id + ' img').attr('src')
-	$('#bg').attr('src', src)
+	$('#bg').css('background-image', 'url(' + src + ')')
 	$("#container").hide()
 	$("#building-detail").show()	
 }

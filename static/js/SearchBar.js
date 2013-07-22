@@ -1,13 +1,10 @@
 function SearchBar() {
-	this.keysPressed = 0
 	this.searchHistory = []
 	$("#search-bar").on('keyup', null, this, this.handleKeyPressed)
 }
 
 SearchBar.prototype.handleKeyPressed = function(e){
-	e.data.keysPressed++
-	if (this.keysPressed == 3 || e.which == 13){
-		e.data.keysPressed = 0
+	if (e.which == 13){
 		e.data.search(e.target.value)
 	}
 }

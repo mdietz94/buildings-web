@@ -30,4 +30,11 @@ BuildingCollection.prototype.clear = function(){
 	$(this).trigger('clear')
 }
 
+BuildingCollection.prototype.get = function(id){
+	ret = this.buildings.filter(function(index){ return this.id == id })
+	if (ret)
+		return ret[0]
+	return null
+}
+
 Buildings = new BuildingCollection()
