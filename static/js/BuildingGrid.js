@@ -1,5 +1,6 @@
 function BuildingGrid(){
 	$("#container").masonry({ columnWidth: 200, itemSelector: ".building-element", gutter: 5 })
+	$("#bg").attr('src', '/static/images/bldg0x0.jpg')
 	$(Buildings).on('reset', null, this, this.reload)
 	$(Buildings).on('add', null, this, this.reload)
 	$(Buildings).on('clear', null, this, this.reload)
@@ -18,6 +19,9 @@ BuildingGrid.prototype.reload = function(e){
 					var $img = $('<img>').attr('src', '/static/images/bldg' + bldg.id + 'x0.jpg')
 					var $name = $('<div>').addClass('name').text(bldg.name)
 					var $el = $('<div>').attr('id', bldg.id).addClass('building-element').append($img).append($name)
+					$el.on('click', function(){
+						Details.load(bldg.id)
+					})
 					if (isLarge) {
 						$el.addClass('large')
 					}
@@ -29,6 +33,9 @@ BuildingGrid.prototype.reload = function(e){
 					if (isLarge) {
 						$el.addClass('large')
 					}
+					$el.on('click', function(){
+						Details.load(bldg.id)
+					})
 					$("#container").append($el).masonry('appended', $el)
 				})
 			})(Buildings.buildings[i])
