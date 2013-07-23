@@ -8,18 +8,21 @@ function Building(_id, name, architect){
 	this.architect = architect
 }
 Building.prototype.load = function(){
-	$.getJSON("/find-by-id/" + this._id, function(response){
-		this.name = response['name']
-		this.architect = response['architect']
-		this.country = response['country']
-		this.state = response['state']
-		this.city = response['city']
-		this.region = response['region']
-		this.address = response['address']
-		this.latitude = response['latitude']
-		this.longitude = response['longitude']
-		this.date = response['date']
-		this.description = response['description']
-		this.keywords = response['keywords']
+	bldg = this
+	$.getJSON("/find-by-id/" + this.id, function(response){
+		console.log(response)
+		bldg.name = response['name']
+		bldg.architect = response['architect']
+		bldg.country = response['country']
+		bldg.state = response['state']
+		bldg.city = response['city']
+		bldg.region = response['region']
+		bldg.address = response['address']
+		bldg.latitude = response['latitude']
+		bldg.longitude = response['longitude']
+		bldg.date = response['date']
+		bldg.description = response['description']
+		bldg.keywords = response['keywords']
+		$(bldg).trigger('loaded')
 	})
 }

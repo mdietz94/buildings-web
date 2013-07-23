@@ -26,6 +26,9 @@ BuildingGrid.prototype.reload = function(e){
 						$el.addClass('large')
 					}
 					$("#container").append($el).masonry('appended', $el)
+					$("#" + bldg.id).mouseover(function(){
+						Info.load(parseInt($(this).attr('id')))
+					})
 				}).fail(function(){
 					var $img = $('<img>').attr('src', '/static/images/bldg0x0.jpg')
 					var $name = $('<div>').addClass('name').text(bldg.name)
@@ -37,6 +40,9 @@ BuildingGrid.prototype.reload = function(e){
 						Details.load(bldg.id)
 					})
 					$("#container").append($el).masonry('appended', $el)
+					$("#" + bldg.id).mouseover(function(){
+						Info.load(parseInt($(this).attr('id')))
+					})
 				})
 			})(Buildings.buildings[i])
 		}
