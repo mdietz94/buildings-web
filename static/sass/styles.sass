@@ -1,14 +1,6 @@
 body
 	font-family: Roboto, Arial, serif
-/*
-	input, textarea
-		margin: 0
-		letter-spacing: normal
-		word-spacing: normal
-		text-transform: none
-		text-indent: 0
-		text-shadow: none
-		text-align: start */
+	font-weight: 400
 #container
 	position: absolute
 	left: 0px
@@ -25,6 +17,20 @@ body
 	padding: 10px
 	box-shadow: 0 2px 6px rgba(0,0,0,0.3),0 -3px 8px rgba(0,0,0,0.2)
 	border: none
+	font-family: Roboto
+	font-weight: 300
+#building-detail
+	position: fixed
+	left: 51%
+	right: 0px
+	top: 0px
+	bottom: 0px
+	display: none
+	z-index: 1
+	background-color: rgba(255,255,255,0.3)
+	text-align: justify
+	padding: 10px
+	box-shadow: -2px 0px 5px black
 #info-pane
 	position: fixed
 	top: 55px
@@ -37,6 +43,9 @@ body
 	transition: height 0.5s
 	opacity: 0
 	height: 100px
+	.info-name
+		text-align: center
+		font-weight: 500
 .flipInX
 	-webkit-animation-duration: 1s
 	-webkit-animation-delay: .2s
@@ -93,3 +102,7 @@ body
 	right: 0
 	bottom: 0
 	opacity: .3
+#galleria
+	width: 700px
+	height: 400px
+	background: #000

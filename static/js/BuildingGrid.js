@@ -1,9 +1,21 @@
 function BuildingGrid(){
-	$("#container").masonry({ columnWidth: 200, itemSelector: ".building-element", gutter: 5 })
+	$("#container").masonry({ columnWidth: 200, itemSelector: ".building-element", gutter: 5, transitionDuration: '0.6s' })
 	$("#bg").css('background-image', 'url(/static/images/bldg0x0.jpg)')
 	$(Buildings).on('reset', null, this, this.reload)
 	$(Buildings).on('add', null, this, this.reload)
 	$(Buildings).on('clear', null, this, this.reload)
+	$(Details).on('show', null, this, this.showDetail)
+	$(Details).on('hide', null, this, this.hideDetail)
+}
+
+BuildingGrid.prototype.showDetail = function(){
+	$("#container").css('width', document.width/2)
+	$("#container").masonry()
+}
+
+BuildingGrid.prototype.hideDetail = function(){
+	$("#container").css('width', document.width)
+	$("#container").masonry()
 }
 
 BuildingGrid.prototype.reload = function(e){

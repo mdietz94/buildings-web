@@ -13,6 +13,9 @@ Building.prototype.load = function(){
 		console.log(response)
 		bldg.name = response['name']
 		bldg.architect = response['architect']
+		if (bldg.architect == null){
+			bldg.architect = "Architect Unknown"
+		}
 		bldg.country = response['country']
 		bldg.state = response['state']
 		bldg.city = response['city']
