@@ -33,7 +33,7 @@ Building.prototype.load = function(){
 		if (lat2 != null) { // we can assume that either both or neither will be null
 			var x = (lon2 - lon1) * Math.cos((lat2 + lat1)/2)
 			var y = lat2 - lat1
-			bldg.distance = Math.sqrt(x*x + y*y) * 3959 // for miles, in KM it would be 6371
+			bldg.distance = (Math.sqrt(x*x + y*y) * 3959).toFixed(1) // for miles, in KM it would be 6371
 		}
 		$(bldg).trigger('loaded')
 	})

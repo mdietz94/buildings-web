@@ -1,4 +1,6 @@
+_ctx = undefined
 function Location(){
+	_ctx = this
 	if (!navigator.geolocation) {
 		// no way to get a location fix
 		$(this).trigger('lost')
@@ -18,9 +20,9 @@ Location.prototype.refresh = function(){
 }
 
 Location.prototype.onFix = function(position){
-	this.latitude = position.coords.latitude
-	this.longitude = position.coords.longitude
-	$(this).trigger('found')
+	_ctx.latitude = position.coords.latitude
+	_ctx.longitude = position.coords.longitude
+	$(_ctx).trigger('found')
 }
 
 Location.prototype.onLost = function(){
