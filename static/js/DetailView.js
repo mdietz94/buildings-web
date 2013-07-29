@@ -21,11 +21,24 @@ DetailView.prototype.load = function(id){
 		Galleria.loadTheme('/static/js/lib/galleria/themes/classic/galleria.classic.min.js')
 		Galleria.run("#galleria")
 	})
+	$(window).on('mousemove', null, this, this.onMouseMove)
 }
 
 DetailView.prototype.unload = function(){
 	$("#building-detail").hide()
 	$(this).trigger('hide')
+}
+
+DetailView.prototype.onMouseMove = function(e){
+	if (e.screenX < $(window).width() / 2) {
+		if (!$("#building-detail").hasClass("shrink"))
+			$(e.data).trigger("shrink")
+		$("#building-detail").addClass('shrink')
+	} else {
+		if ($("#building-detail").hasClass("shrink"))
+			$(e.data).trigger("show")
+		$("#building-detail").removeClass('shrink')
+	}
 }
 
 Details = new DetailView()

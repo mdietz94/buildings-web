@@ -35,7 +35,8 @@ InfoPane.prototype.load = function(id){
 			+ '</div><div class="info-architect">' + this.architect + '</div>'
 			+ '<div class="info-distance">' + this.distance + '</div>')
 		$("#info-pane").addClass("flipInX")
-		setTimeout(function(){ $("#info-pane").css('opacity', '1') }, 500) // so it stays hidden until flipping in
+		//$("#info-pane").css('opacity','1')
+		//setTimeout(function(){ $("#info-pane").css('opacity', '1') }, 500) // so it stays hidden until flipping in
 	})
 	this.bldg.load()
 }

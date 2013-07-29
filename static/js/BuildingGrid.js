@@ -6,6 +6,7 @@ function BuildingGrid(){
 	$(Buildings).on('clear', null, this, this.reload)
 	$(Details).on('show', null, this, this.showDetail)
 	$(Details).on('hide', null, this, this.hideDetail)
+	$(Details).on('shrink', null, this, this.shrinkDetail)
 }
 
 BuildingGrid.prototype.showDetail = function(){
@@ -15,6 +16,11 @@ BuildingGrid.prototype.showDetail = function(){
 
 BuildingGrid.prototype.hideDetail = function(){
 	$("#container").css('width', document.width)
+	$("#container").masonry()
+}
+
+BuildingGrid.prototype.shrinkDetail = function(){
+	$("#container").css('width', '90%')
 	$("#container").masonry()
 }
 

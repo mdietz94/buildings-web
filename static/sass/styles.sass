@@ -32,6 +32,31 @@ body
 	padding: 10px
 	box-shadow: -2px 0px 5px black
 	overflow-y: scroll
+	transition: left 1s
+	-webkit-transition: left 1s
+	-moz-transition: left 1s
+	-o-transition: left 1s
+	-ms-transition: left 1s
+	&.shrink
+		left: 90%
+		text-align: center
+		.detail-architect
+			display: none
+		.detail-description
+			display: none
+	.detail-name
+		overflow: hidden
+		height: 20px
+	.detail-architect
+		overflow: hidden
+		height: 20px
+	.detail-description
+		overflow: hidden
+		height: 20px
+	.detail-location
+		overflow: hidden
+		height: 20px
+		margin-bottom: 30px
 #info-pane
 	position: fixed
 	top: 55px
@@ -41,35 +66,40 @@ body
 	padding: 10px
 	background-color: #fff
 	box-shadow: 0 2px 6px rgba(0,0,0,0.3),0 -3px 8px rgba(0,0,0,0.2)
-	transition: height 0.5s
-	opacity: 0
 	height: 100px
-	transition: background-color 1s
-	-webkit-transition: background-color 1s
-	-moz-transition: background-color 1s
-	-o-transition: background-color 1s
-	-ms-transition: background-color 1s
+	-webkit-backface-visibility: hidden
+	-moz-backface-visibility: hidden
+	-ms-backface-visibility: hidden
+	-o-backface-visibility: hidden
+	backface-visibility: hidden
+	-webkit-animation-duration: 1s
+	-webkit-animation-delay: .2s
+	-webkit-animation-timing-function: ease
+	-webkit-animation-fill-mode: both
+	-moz-animation-duration: 1s
+	-moz-animation-delay: .2s
+	-moz-animation-timing-function: ease
+	-moz-animation-fill-mode: both
+	-ms-animation-duration: 1s
+	-ms-animation-delay: .2s
+	-ms-animation-timing-function: ease
+	-ms-animation-fill-mode: both
+	-o-animation-duration: 1s
+	-o-animation-delay: .2s
+	-o-animation-timing-function: ease
+	-o-animation-fill-mode: both
+	animation-duration: 1s
+	animation-delay: .2s
+	animation-timing-function: ease
+	animation-fill-mode: both
 	&:hover
 		background-color: rgba(255,255,255,0.5)
 	.info-name
 		text-align: center
 		font-weight: 500
-.flipInX
-	-webkit-animation-duration: 1s
-	-webkit-animation-delay: .2s
-	-webkit-animation-timing-function: ease
-	-moz-animation-duration: 1s
-	-moz-animation-delay: .2s
-	-moz-animation-timing-function: ease
-	-ms-animation-duration: 1s
-	-ms-animation-delay: .2s
-	-ms-animation-timing-function: ease
-	-o-animation-duration: 1s
-	-o-animation-delay: .2s
-	-o-animation-timing-function: ease
-	animation-duration: 1s
-	animation-delay: .2s
-	animation-timing-function: ease
+	&:not(.flipInX)
+		opacity: 0
+
 .building-element
 	padding: 0
 	margin: 0
