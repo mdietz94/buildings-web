@@ -11,18 +11,24 @@ DetailView.prototype.load = function(id){
 	$(this).trigger('show')
 	var bldg = new Building(id)
 	bldg.load()
+	$.getJSON("/num_images/" + id, function(r){
+		bldg.numImages = r['images']
+	})
 	$(document).one('ajaxStop', function(){
-		$("#building-detail").html("<div class='detail-name'>" + bldg.name + "</div>"
+		content = "<div class='detail-name'>" + bldg.name + "</div>"
 			+ "<div class='detail-architect'>" + bldg.architect + "</div>"
 			+ "<div class='detail-location'>" + bldg.city + ", " + bldg.state + "</div>"
 			+ "<div class='detail-description'>" + bldg.description + "</div>"
 			+ "<div id='galleria'>"
-			+ "<img src='" + src + "' alt='/static/images/bldg0x0.jpg'>"
-			+ "<img src='http://maps.googleapis.com/maps/api/streetview?size=600x300&location=" + bldg.latitude
-			+ "," + bldg.longitude + "&sensor=false' ></div>"
+		for (var i=0;i<bldg.numImages;i++) {
+			content += "<img src='/static/images/bldg" + bldg.id + "x" + i + ".jpg' alt='Main Image'>"
+		}
+		content += "<img src='http://maps.googleapis.com/maps/api/streetview?size=600x300&location=" + bldg.latitude
+			+ "," + bldg.longitude + "&sensor=false' alt='Google StreetView'></div>"
 			+ "<div class='detail-map'><img src='http://maps.googleapis.com/maps/api/staticmap?markers=size:mid%7Ccolor:red%7C"
-			+ bldg.latitude + "," + bldg.longitude + "&zoom=13&size=200x200&sensor=false&visual_refresh=true' ></div>"
-			+ "</div>")
+			+ bldg.latitude + "," + bldg.longitude + "&zoom=13&size=200x200&sensor=false&visual_refresh=true' alt='Google Maps'></div>"
+			+ "</div>"
+			$("#building-detail").html(content)
 		Galleria.loadTheme('/static/js/lib/galleria/themes/classic/galleria.classic.min.js')
 		Galleria.run("#galleria")
 	})

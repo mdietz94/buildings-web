@@ -40,8 +40,12 @@ def add_image(uid):
         print("Image Error {0}".format(str(e)))
         return abort(500)
     return simplejson.dumps({ 'message': 'OK' })
-        
 
+@app.route('/num_images/<uid>')
+def num_images(uid):
+    img_num = [ x for x in os.listdir('./static/images') if x.startswith('bldg{0}x'.format(uid))]
+    img_num = len(img_num)
+    return simplejson.dumps({ 'images': img_num })
 
 @app.route("/username")
 def username():
