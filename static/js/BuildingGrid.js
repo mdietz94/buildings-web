@@ -27,6 +27,8 @@ BuildingGrid.prototype.shrinkDetail = function(){
 BuildingGrid.prototype.reload = function(e){
 	$newData = []
 	newIds = Buildings.buildings.map(function(b){ return b.id.toString() })
+	newIds.push('*')
+	newIds.push('**')
 	oldIds = $.map($(".building-element"), function(b){ return b.id })
 	for (var i = 0; i < Buildings.buildings.length; i++){
 		// we only need to do this if the id isn't already in our list

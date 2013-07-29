@@ -37,26 +37,52 @@ body
 	-moz-transition: left 1s
 	-o-transition: left 1s
 	-ms-transition: left 1s
+	margin: 10px
 	&.shrink
 		left: 90%
 		text-align: center
 		.detail-architect
 			display: none
 		.detail-description
-			display: none
+			height: 20px
+			text-overflow: ellipsis
+			overflow: hidden
+		.detail-map
+			position: relative
+			left: 250px
+			height: 10px
+		#galleria
+			opacity: 0
 	.detail-name
 		overflow: hidden
 		height: 20px
+		margin-bottom: 10px
+		text-decoration: underline
+		text-align: center
+		font-weight: 500
 	.detail-architect
 		overflow: hidden
 		height: 20px
+		margin-bottom: 10px
 	.detail-description
 		overflow: hidden
-		height: 20px
+		height: 200px
+		overflow-y: scroll
+		transition: all 1s
+		margin-bottom: 10px
+		font-weight: 300
 	.detail-location
 		overflow: hidden
 		height: 20px
-		margin-bottom: 30px
+		margin-bottom: 10px
+	.detail-map
+		position: relative
+		transition: all 1s
+		margin-left: 10px
+		float: right
+		display: inline
+		height: 200px
+		overflow: hidden
 #info-pane
 	position: fixed
 	top: 55px
@@ -141,6 +167,9 @@ body
 	bottom: 0
 	opacity: .3
 #galleria
-	width: 700px
-	height: 400px
-	background: #000
+	position: relative
+	right: 5px
+	left: 5px
+	height: 40%
+	background: transparent
+	transition: opacity 1s
