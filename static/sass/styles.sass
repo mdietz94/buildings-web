@@ -1,16 +1,32 @@
 body
 	font-family: Roboto, Arial, serif
 	font-weight: 400
-#container
+#header
 	position: absolute
 	left: 0px
 	right: 0px
 	top: 0px
+	height: 40px
+	background-color: rgba(0,0,0,.8)
+	#login
+		float: right
+		a
+			color: white
+			font-size: 12px
+			margin-right: 20px
+			margin-top: 10px
+			&:hover
+				color: gray
+#container
+	position: absolute
+	left: 0px
+	right: 0px
+	top: 50px
 	bottom: 0px
 	z-index: 0
 #search-bar
 	position: fixed
-	top: 10px
+	top: 60px
 	left: 30px
 	width: 20%
 	z-index: 10
@@ -23,7 +39,7 @@ body
 	position: fixed
 	left: 51%
 	right: 0px
-	top: 0px
+	top: 50px
 	bottom: 0px
 	display: none
 	z-index: 1
