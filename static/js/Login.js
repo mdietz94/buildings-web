@@ -1,5 +1,24 @@
 Login = function(){
-	// Empty constructor
+	$(".tooltip a").on('click', function(e){
+		if ($(".tooltip span:hidden").length > 0)
+			$(".tooltip span:hidden").show()
+		else
+			$(".tooltip span").hide()
+	})
+	$("#bg").on('click', function(e){
+		$(".tooltip span").hide()
+		console.log(e.target)
+	})
+	$("#building-detail").on('click', function(e){
+		$(".tooltip span").hide()
+		console.log(e.target)
+	})
+	$("#container").on('click', function(e){
+		$(".tooltip span").hide()
+		console.log(e.target)
+	})
+
+	this.refresh()
 }
 
 Login.prototype.logout = function(){
@@ -19,9 +38,22 @@ Login.prototype.login = function(){
 }
 
 Login.prototype.refresh = function(){
-	// here we check whether we are logged in
-	// and update any messages accordingly
-	// this should get called whenever we do a
-	// login or logout to make sure it actually
-	// did what it was supposed to.
+	_ctx = this
+	$.getJSON("/username", function(response){
+		username = response['username']
+		if (username){
+			// we are logged in -- let's display account settings (user info, logout, etc.)
+			$("#menu-data").html('<li>Option 1</li>'
+				+ '<li>Option 2</li>'
+				+ '<li>Option 3</li>')
+		} else {
+			// we are not logged in
+			$("#menu-data").html('<input type="text" id="login-form-username" placeholder="Username"></input>'
+				+ '<input type="password" id="login-form-password" placeholder="Password"></input>'
+				+ '<input id="login-submit" type="submit"></input>')
+			$("#login-submit").one('click', function(){
+				_ctx.login()
+			})
+		}
+	})
 }
