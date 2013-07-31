@@ -42,10 +42,34 @@ Login.prototype.saveChanges = function(e){
 	// this may not belong in login...
 	// anyway, do the saving then...
 	_ctx = e.data
+	architect = $("#building-detail .detail-architect").val()
+	location = $("#building-detail .detail-location").val()
+	date = $("#building-detail .detail-date").val()
+	description = $("#building-detail .detail-description").val()
+	id = $("#building-detail .detail-id").val()
+	name = $("#building-detail .detail-name").val()
+	$.post("/edit", { 'architect': architect, 'location': location, 'description': description, 'date': date, 'id': id, 'name': name })
+
 	newVal = $("#building-detail .detail-architect").val()
 	newDiv = $("<div class='detail-architect'></div>")
 	newDiv.text(newVal)
 	$("#building-detail .detail-architect").replaceWith(newDiv)
+
+	newVal = $("#building-detail .detail-location").val()
+	newDiv = $("<div class='detail-location'></div>")
+	newDiv.text(newVal)
+	$("#building-detail .detail-location").replaceWith(newDiv)
+
+	newVal = $("#building-detail .detail-date").val()
+	newDiv = $("<div class='detail-date'></div>")
+	newDiv.text(newVal)
+	$("#building-detail .detail-date").replaceWith(newDiv)
+
+	newVal = $("#building-detail .detail-description").val()
+	newDiv = $("<div class='detail-description'></div>")
+	newDiv.text(newVal)
+	$("#building-detail .detail-description").replaceWith(newDiv)
+
 	$("#edit").html("Edit")
 	$("#edit").one('click', _ctx, function(e){
 		editText = $("#building-detail .detail-architect").text()
@@ -53,6 +77,25 @@ Login.prototype.saveChanges = function(e){
 		editableArea.val(editText)
 		$("#building-detail .detail-architect").replaceWith(editableArea)
 		editableArea.focus()
+
+		editText = $("#building-detail .detail-location").text()
+		editableArea = $("<textarea class='detail-location' />")
+		editableArea.val(editText)
+		$("#building-detail .detail-location").replaceWith(editableArea)
+		editableArea.focus()
+
+		editText = $("#building-detail .detail-date").text()
+		editableArea = $("<textarea class='detail-date' />")
+		editableArea.val(editText)
+		$("#building-detail .detail-date").replaceWith(editableArea)
+		editableArea.focus()
+
+		editText = $("#building-detail .detail-description").text()
+		editableArea = $("<textarea class='detail-description' />")
+		editableArea.val(editText)
+		$("#building-detail .detail-description").replaceWith(editableArea)
+		editableArea.focus()
+
 		$("#edit").html("Save Changes")
 		$("#edit").one('click',e.data,_ctx.saveChanges)
 	})
@@ -74,10 +117,29 @@ Login.prototype.refresh = function(){
 			$("#edit").one('click', _ctx, function(e){
 				$("#edit").html("Save Changes")
 				$("#edit").one('click',e.data, e.data.saveChanges)
+
 				editText = $("#building-detail .detail-architect").text()
 				editableArea = $("<textarea class='detail-architect' />")
 				editableArea.val(editText)
 				$("#building-detail .detail-architect").replaceWith(editableArea)
+				editableArea.focus()
+
+				editText = $("#building-detail .detail-location").text()
+				editableArea = $("<textarea class='detail-location' />")
+				editableArea.val(editText)
+				$("#building-detail .detail-location").replaceWith(editableArea)
+				editableArea.focus()
+
+				editText = $("#building-detail .detail-date").text()
+				editableArea = $("<textarea class='detail-date' />")
+				editableArea.val(editText)
+				$("#building-detail .detail-date").replaceWith(editableArea)
+				editableArea.focus()
+		
+				editText = $("#building-detail .detail-description").text()
+				editableArea = $("<textarea class='detail-description' />")
+				editableArea.val(editText)
+				$("#building-detail .detail-description").replaceWith(editableArea)
 				editableArea.focus()
 			})
 		} else {

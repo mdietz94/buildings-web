@@ -16,9 +16,11 @@ DetailView.prototype.load = function(id){
 	})
 	_ctx = this
 	$(document).one('ajaxStop', function(){
-		content = "<div class='detail-name'>" + bldg.name + "</div>"
+		content = "<div class='detail-id' style='display:none;'>" + bldg.id + "</div>"
+			+ "<div class='detail-name'>" + bldg.name + "</div>"
 			+ "<div class='detail-architect'>" + bldg.architect + "</div>"
 			+ "<div class='detail-location'>" + bldg.city + ", " + bldg.state + "</div>"
+			+ "<span class='detail-date'>" + bldg.date + "</span>"
 			+ "<div class='detail-map'><img src='http://maps.googleapis.com/maps/api/staticmap?markers=size:mid%7Ccolor:red%7C"
 			+ bldg.latitude + "," + bldg.longitude + "&zoom=13&size=200x200&sensor=false&visual_refresh=true' alt='Google Maps'></div>"
 			+ "<div class='detail-description'>" + bldg.description + "</div>"

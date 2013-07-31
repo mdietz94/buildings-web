@@ -87,7 +87,33 @@ body
 		&:focus
 			background-color: rgba(0,0,0,0.6)
 			color: white
-
+	textarea.detail-location
+		font-family: inherit
+		font-weight: inherit
+		background-color: inherit
+		resize: none
+		display: block
+		&:focus
+			background-color: rgba(0,0,0,0.6)
+			color: white
+	textarea.detail-description
+		font-family: inherit
+		font-weight: inherit
+		background-color: inherit
+		transition: none
+		resize: none
+		&:focus
+			background-color: rgba(0,0,0,0.6)
+			color: white
+	textarea.detail-date
+		font-family: inherit
+		font-weight: inherit
+		background-color: inherit
+		transition: none
+		resize: none
+		&:focus
+			background-color: rgba(0,0,0,0.6)
+			color: white
 	.detail-description
 		overflow: hidden
 		height: 200px
@@ -95,10 +121,15 @@ body
 		transition: all 1s
 		margin-bottom: 10px
 		font-weight: 300
+	.detail-date
+		overflow: hidden
+		height: 20px
+		transition: all 1s
 	.detail-location
 		overflow: hidden
 		height: 20px
 		margin-bottom: 10px
+		display: inline
 	.detail-map
 		position: relative
 		transition: all 1s
