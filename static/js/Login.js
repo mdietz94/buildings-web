@@ -45,7 +45,11 @@ Login.prototype.refresh = function(){
 			// we are logged in -- let's display account settings (user info, logout, etc.)
 			$("#menu-data").html('<li>Option 1</li>'
 				+ '<li>Option 2</li>'
-				+ '<li>Option 3</li>')
+				+ '<li class="bar"></li>'
+				+ '<li id="logout">Log Out</li>')
+			$("#logout").one('click', function(){
+				_ctx.logout()
+			})
 		} else {
 			// we are not logged in
 			$("#menu-data").html('<input type="text" id="login-form-username" placeholder="Username"></input>'
