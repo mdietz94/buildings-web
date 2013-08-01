@@ -42,63 +42,43 @@ Login.prototype.saveChanges = function(e){
 	// this may not belong in login...
 	// anyway, do the saving then...
 	_ctx = e.data
-	architect = $("#building-detail .detail-architect").val()
-	location = $("#building-detail .detail-location").val()
-	date = $("#building-detail .detail-date").val()
-	description = $("#building-detail .detail-description").val()
-	id = $("#building-detail .detail-id").val()
-	name = $("#building-detail .detail-name").val()
-	$.post("/edit", { 'architect': architect, 'location': location, 'description': description, 'date': date, 'id': id, 'name': name })
+	architect = $("#building-detail .detail-architect").text()
+	date = $("#building-detail .detail-date").text()
+	description = $("#building-detail .detail-description").text()
+	if (description == "null")
+		description = ''
+	if (date == "null")
+		date = ''
+	if (architect == "Architect Unknown")
+		architect = ''
+	id = $("#building-detail .detail-id").text()
+	name = $("#building-detail .detail-name").text()
+	$.post("/edit", { 'architect': architect, 'description': description, 'date': date, 'id': id, 'name': name }).always(function(e){console.log(e)})
 
-	newVal = $("#building-detail .detail-architect").val()
-	newDiv = $("<div class='detail-architect'></div>")
-	newDiv.text(newVal)
-	$("#building-detail .detail-architect").replaceWith(newDiv)
-
-	newVal = $("#building-detail .detail-location").val()
-	newDiv = $("<div class='detail-location'></div>")
-	newDiv.text(newVal)
-	$("#building-detail .detail-location").replaceWith(newDiv)
-
-	newVal = $("#building-detail .detail-date").val()
-	newDiv = $("<div class='detail-date'></div>")
-	newDiv.text(newVal)
-	$("#building-detail .detail-date").replaceWith(newDiv)
-
-	newVal = $("#building-detail .detail-description").val()
-	newDiv = $("<div class='detail-description'></div>")
-	newDiv.text(newVal)
-	$("#building-detail .detail-description").replaceWith(newDiv)
+	makeStatic('architect')
+	makeStatic('date')
+	makeStatic('description')
 
 	$("#edit").html("Edit")
 	$("#edit").one('click', _ctx, function(e){
-		editText = $("#building-detail .detail-architect").text()
-		editableArea = $("<textarea class='detail-architect' />")
-		editableArea.val(editText)
-		$("#building-detail .detail-architect").replaceWith(editableArea)
-		editableArea.focus()
 
-		editText = $("#building-detail .detail-location").text()
-		editableArea = $("<textarea class='detail-location' />")
-		editableArea.val(editText)
-		$("#building-detail .detail-location").replaceWith(editableArea)
-		editableArea.focus()
-
-		editText = $("#building-detail .detail-date").text()
-		editableArea = $("<textarea class='detail-date' />")
-		editableArea.val(editText)
-		$("#building-detail .detail-date").replaceWith(editableArea)
-		editableArea.focus()
-
-		editText = $("#building-detail .detail-description").text()
-		editableArea = $("<textarea class='detail-description' />")
-		editableArea.val(editText)
-		$("#building-detail .detail-description").replaceWith(editableArea)
-		editableArea.focus()
+		makeEditable('architect')
+		makeEditable('date')
+		makeEditable('description')
 
 		$("#edit").html("Save Changes")
 		$("#edit").one('click',e.data,_ctx.saveChanges)
 	})
+}
+
+makeStatic = function(name) {
+	$("#building-detail .detail-" + name).attr('contentEditable','')
+	$("#building-detail .detail-" + name).removeClass('editable')
+}
+
+makeEditable = function(name) {
+	$("#building-detail .detail-" + name).attr('contentEditable','true')
+	$("#building-detail .detail-" + name).addClass('editable')
 }
 
 Login.prototype.refresh = function(){
@@ -118,29 +98,9 @@ Login.prototype.refresh = function(){
 				$("#edit").html("Save Changes")
 				$("#edit").one('click',e.data, e.data.saveChanges)
 
-				editText = $("#building-detail .detail-architect").text()
-				editableArea = $("<textarea class='detail-architect' />")
-				editableArea.val(editText)
-				$("#building-detail .detail-architect").replaceWith(editableArea)
-				editableArea.focus()
-
-				editText = $("#building-detail .detail-location").text()
-				editableArea = $("<textarea class='detail-location' />")
-				editableArea.val(editText)
-				$("#building-detail .detail-location").replaceWith(editableArea)
-				editableArea.focus()
-
-				editText = $("#building-detail .detail-date").text()
-				editableArea = $("<textarea class='detail-date' />")
-				editableArea.val(editText)
-				$("#building-detail .detail-date").replaceWith(editableArea)
-				editableArea.focus()
-		
-				editText = $("#building-detail .detail-description").text()
-				editableArea = $("<textarea class='detail-description' />")
-				editableArea.val(editText)
-				$("#building-detail .detail-description").replaceWith(editableArea)
-				editableArea.focus()
+				makeEditable('architect')
+				makeEditable('date')
+				makeEditable('description')
 			})
 		} else {
 			// we are not logged in

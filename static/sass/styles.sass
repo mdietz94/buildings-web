@@ -78,39 +78,23 @@ body
 	.detail-architect
 		overflow: hidden
 		height: 20px
+		width: 300px
 		margin-bottom: 10px
-	textarea.detail-architect
-		font-family: inherit
-		font-weight: inherit
-		background-color: inherit
-		resize: none
+	.detail-architect.editable
+		background-color: rgba(255,255,255,.7)
+		border: 1px solid black
 		&:focus
 			background-color: rgba(0,0,0,0.6)
 			color: white
-	textarea.detail-location
-		font-family: inherit
-		font-weight: inherit
-		background-color: inherit
-		resize: none
-		display: block
+	.detail-description.editable
+		background-color: rgba(255,255,255,.7)
+		border: 1px solid black
 		&:focus
 			background-color: rgba(0,0,0,0.6)
 			color: white
-	textarea.detail-description
-		font-family: inherit
-		font-weight: inherit
-		background-color: inherit
-		transition: none
-		resize: none
-		&:focus
-			background-color: rgba(0,0,0,0.6)
-			color: white
-	textarea.detail-date
-		font-family: inherit
-		font-weight: inherit
-		background-color: inherit
-		transition: none
-		resize: none
+	.detail-date.editable
+		background-color: rgba(255,255,255,.7)
+		border: 1px solid black
 		&:focus
 			background-color: rgba(0,0,0,0.6)
 			color: white
@@ -118,13 +102,17 @@ body
 		overflow: hidden
 		height: 200px
 		overflow-y: scroll
-		transition: all 1s
+		transition: left,width 1s
 		margin-bottom: 10px
 		font-weight: 300
 	.detail-date
 		overflow: hidden
 		height: 20px
-		transition: all 1s
+		margin-bottom: 10px
+		margin-top: 5px
+		width: 100px
+		transition: left,width 1s
+		display: block
 	.detail-location
 		overflow: hidden
 		height: 20px
@@ -132,7 +120,7 @@ body
 		display: inline
 	.detail-map
 		position: relative
-		transition: all 1s
+		transition: left,width 1s
 		margin-left: 10px
 		float: right
 		display: inline
