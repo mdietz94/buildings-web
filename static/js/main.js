@@ -10,6 +10,7 @@ function initialize(){
 	search = new SearchBar()
 	grid = new BuildingGrid()
 	login = new Login()
+	register = new Register()
 	$.stellar({
 		//scollProperty: 'transform', // for iOS support
 		responsive: true // refresh parallax on window resize
