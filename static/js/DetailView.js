@@ -42,6 +42,7 @@ DetailView.prototype.load = function(id){
 		})
 		$(window).on('mousemove', null, this, this.onMouseMove)
 	} else { // we are adding a new building
+		this.id = -1
 		$("#building-detail").show()
 		$(this).trigger("show")
 		$("#building-detail").html(

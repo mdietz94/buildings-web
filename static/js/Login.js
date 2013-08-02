@@ -60,6 +60,7 @@ Login.prototype.saveChanges = function(e){
 	makeStatic('description')
 
 	$("#edit").html("Edit")
+	$("#add").show()
 	$("#edit").one('click', _ctx, function(e){
 
 		makeEditable('architect')
@@ -81,6 +82,43 @@ makeEditable = function(name) {
 	$("#building-detail .detail-" + name).addClass('editable')
 }
 
+addBuilding = function(e){
+	$("#add").html("Add")
+	$("#edit").show()
+	name = $("#building-detail .detail-name").text()
+	architect = $("#building-detail .detail-architect").text()
+	date = $("#building-detail .detail-date").text()
+	description = $("#building-detail .detail-description").text()
+	loc = $("#building-detail .detail-location").text().split(",")
+	state = null
+	city = null 
+	address = null
+	if (loc.length > 2){
+		address = loc[0].trim()
+		city = loc[1].trim()
+		state = loc[2].trim()
+	} else if (loc.length > 1){
+		city = loc[0].trim()
+		state = loc[1].trim()
+	} else if (loc.length > 0){
+		state = loc[0].trim()
+	}
+	$.post("/add", {
+		'architect': architect,
+		'description': description,
+		'date': date,
+		'name': name,
+		'state': state,
+		'city': city,
+		'address': address
+	}).always(function(e){console.log(e)})
+	makeStatic('name')
+	makeStatic('architect')
+	makeStatic('date')
+	makeStatic('description')
+	makeStatic('location')
+}
+
 Login.prototype.refresh = function(){
 	_ctx = this
 	$.getJSON("/username", function(response){
@@ -96,6 +134,7 @@ Login.prototype.refresh = function(){
 				_ctx.logout()
 			})
 			$("#edit").one('click', _ctx, function(e){
+				$("#add").hide()
 				$("#edit").html("Save Changes")
 				$("#edit").one('click',e.data, e.data.saveChanges)
 
@@ -113,44 +152,10 @@ Login.prototype.refresh = function(){
 				makeEditable('location')
 				//makeEditable() use a map for location?
 				makeEditable('description')
-				$("#add").one('click', e.data, function(e){
-					$("#add").html("Add")
-					$("#edit").show()
-					name = $("#building-detail .detail-name").text()
-					architect = $("#building-detail .detail-architect").text()
-					date = $("#building-detail .detail-date").text()
-					description = $("#building-detail .detail-description").text()
-					location = $("#building-detail .detail-location").text().split(",")
-					state = null
-					city = null 
-					address = null
-					if (location.length > 2){
-						address = location[0].trim()
-						city = location[1].trim()
-						state = location[2].trim()
-					} else if (location.length > 1){
-						city = location[0].trim()
-						state = location[1].trim()
-					} else if (location.length > 0){
-						state = location[0].trim()
-					}
 
-					$.post("/add", {
-						'architect': architect,
-						'description': description,
-						'date': date,
-						'name': name,
-						'state': state,
-						'city': city,
-						'address': address
-					}).always(function(e){console.log(e)})
-					makeStatic('name')
-					makeStatic('architect')
-					makeStatic('date')
-					makeStatic('description')
-				})
+				$("#add").one('click', e.data, addBuilding)
+				$(Details).one('show', e.data, addBuilding)
 			})
-
 
 			// Is there anything to edit?
 			if ($("#building-detail").hasClass('shrink') || $("#building-detail:hidden").length){
@@ -160,7 +165,8 @@ Login.prototype.refresh = function(){
 				$("#edit").hide()
 			})
 			$(Details).on('show', function(){
-				$("#edit").show()
+				if ($("#add").html() != "Save Changes")
+					$("#edit").show()
 			})
 		} else {
 			// we are not logged in
