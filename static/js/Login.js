@@ -87,10 +87,11 @@ Login.prototype.refresh = function(){
 		username = response['username']
 		if (username){
 			// we are logged in -- let's display account settings (user info, logout, etc.)
-			$("#menu-data").html('<li>Settings</li>'
+			$("#menu-data").html('<li id="add">Add</li>'
 				+ '<li id="edit">Edit</li>'
 				+ '<li class="bar"></li>'
 				+ '<li id="logout">Log Out</li>')
+
 			$("#logout").one('click', function(){
 				_ctx.logout()
 			})
@@ -101,6 +102,65 @@ Login.prototype.refresh = function(){
 				makeEditable('architect')
 				makeEditable('date')
 				makeEditable('description')
+			})
+			$("#add").one('click', _ctx, function(e){
+				$("#add").html("Save Changes")
+				$("#edit").hide()
+				Details.load()
+				makeEditable('name')
+				makeEditable('architect')
+				makeEditable('date')
+				makeEditable('location')
+				//makeEditable() use a map for location?
+				makeEditable('description')
+				$("#add").one('click', e.data, function(e){
+					$("#add").html("Add")
+					$("#edit").show()
+					name = $("#building-detail .detail-name").text()
+					architect = $("#building-detail .detail-architect").text()
+					date = $("#building-detail .detail-date").text()
+					description = $("#building-detail .detail-description").text()
+					location = $("#building-detail .detail-location").text().split(",")
+					state = null
+					city = null 
+					address = null
+					if (location.length > 2){
+						address = location[0].trim()
+						city = location[1].trim()
+						state = location[2].trim()
+					} else if (location.length > 1){
+						city = location[0].trim()
+						state = location[1].trim()
+					} else if (location.length > 0){
+						state = location[0].trim()
+					}
+
+					$.post("/add", {
+						'architect': architect,
+						'description': description,
+						'date': date,
+						'name': name,
+						'state': state,
+						'city': city,
+						'address': address
+					}).always(function(e){console.log(e)})
+					makeStatic('name')
+					makeStatic('architect')
+					makeStatic('date')
+					makeStatic('description')
+				})
+			})
+
+
+			// Is there anything to edit?
+			if ($("#building-detail").hasClass('shrink') || $("#building-detail:hidden").length){
+				$("#edit").hide()
+			}
+			$(Details).on('shrink', function(){
+				$("#edit").hide()
+			})
+			$(Details).on('show', function(){
+				$("#edit").show()
 			})
 		} else {
 			// we are not logged in
