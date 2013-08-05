@@ -42,6 +42,7 @@ Login.prototype.saveChanges = function(e){
 	// this may not belong in login...
 	// anyway, do the saving then...
 	_ctx = e.data
+	$(".dropzone").hide()
 	architect = $("#building-detail .detail-architect").text()
 	date = $("#building-detail .detail-date").text()
 	description = $("#building-detail .detail-description").text()
@@ -69,6 +70,8 @@ Login.prototype.saveChanges = function(e){
 
 		$("#edit").html("Save Changes")
 		$("#edit").one('click',e.data,_ctx.saveChanges)
+
+		$(".dropzone").show()
 	})
 }
 
@@ -141,6 +144,7 @@ Login.prototype.refresh = function(){
 				makeEditable('architect')
 				makeEditable('date')
 				makeEditable('description')
+				$(".dropzone").show()
 			})
 			$("#add").one('click', _ctx, function(e){
 				$("#add").html("Save Changes")

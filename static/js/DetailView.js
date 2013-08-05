@@ -32,7 +32,9 @@ DetailView.prototype.load = function(id){
 			content += "<img src='http://maps.googleapis.com/maps/api/streetview?size=600x300&location=" + bldg.latitude
 				+ "," + bldg.longitude + "&sensor=false' alt='Google StreetView'></div>"
 				+ "</div>"
+				+ "<form action='/images/" + bldg.id + "' method='POST' class='dropzone'></form>"
 				$("#building-detail").html(content)
+				$(".dropzone").dropzone({ url: '/images/' + bldg.id})
 			$("#building-detail").removeClass('shrink')
 			$(_ctx).trigger("show")
 			setTimeout(function(){
@@ -52,6 +54,7 @@ DetailView.prototype.load = function(id){
 			+ "<span class='detail-date'>Date</span>"
 			+ "<div class='detail-description'>Description</div></div>")
 		$("#building-detail").removeClass('shrink')
+
 	}
 }
 
