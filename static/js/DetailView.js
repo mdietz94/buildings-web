@@ -47,7 +47,6 @@ DetailView.prototype.load = function(id){
 				Galleria.run("#galleria")
 			}, 1000)
 		})
-		$(window).on('mousemove', null, this, this.onMouseMove)
 	} else { // we are adding a new building
 		this.id = -1
 		$("#building-detail").show()
@@ -58,14 +57,13 @@ DetailView.prototype.load = function(id){
 			+ "<div class='detail-location'>Address, City, State</div>"
 			+ "<span class='detail-date'>Date</span>"
 			+ "<div class='detail-description'>Description</div></div>")
-		$("#building-detail").removeClass('shrink')
 
 	}
 }
 
 DetailView.prototype.unload = function(){
-	$("#building-detail").hide()
 	$(this).trigger('hide')
+	$("#building-detail").hide()
 }
 
 Details = new DetailView()

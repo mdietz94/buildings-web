@@ -162,10 +162,10 @@ Login.prototype.refresh = function(){
 			})
 
 			// Is there anything to edit?
-			if ($("#building-detail").hasClass('shrink') || $("#building-detail:hidden").length){
+			if (!$("#building-detail").is(":visible")){
 				$("#edit").hide()
 			}
-			$(Details).on('shrink', function(){
+			$(Details).on('hide', function(){
 				$("#edit").hide()
 			})
 			$(Details).on('show', function(){
