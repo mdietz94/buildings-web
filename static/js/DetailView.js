@@ -17,7 +17,9 @@ DetailView.prototype.load = function(id){
 		})
 		_ctx = this
 		$(document).one('ajaxStop', function(){
-			content = "<div class='detail-id' style='display:none;'>" + bldg.id + "</div>"
+			$("input[type='file']").remove()
+			content = "<img id='close' src='/static/images/close.png' />"
+				+ "<div class='detail-id' style='display:none;'>" + bldg.id + "</div>"
 				+ "<div class='detail-name'>" + bldg.name + "</div>"
 				+ "<div class='detail-architect'>" + bldg.architect + "</div>"
 				+ "<div class='detail-location'>" + bldg.city + ", " + bldg.state + "</div>"
@@ -35,6 +37,9 @@ DetailView.prototype.load = function(id){
 				+ "<form action='/images/" + bldg.id + "' method='POST' class='dropzone'></form>"
 				$("#building-detail").html(content)
 				$(".dropzone").dropzone({ url: '/images/' + bldg.id})
+			$("#close").on('click', function(){
+				_ctx.unload()
+			})
 			$("#building-detail").removeClass('shrink')
 			$(_ctx).trigger("show")
 			setTimeout(function(){
@@ -61,18 +66,6 @@ DetailView.prototype.load = function(id){
 DetailView.prototype.unload = function(){
 	$("#building-detail").hide()
 	$(this).trigger('hide')
-}
-
-DetailView.prototype.onMouseMove = function(e){
-	if (e.screenX < $(window).width() / 3) {
-		if (!$("#building-detail").hasClass("shrink"))
-			$(e.data).trigger("shrink")
-		$("#building-detail").addClass('shrink')
-	} else if (e.screenX > $(window).width() / 2) {
-		if ($("#building-detail").hasClass("shrink"))
-			$(e.data).trigger("show")
-		$("#building-detail").removeClass('shrink')
-	}
 }
 
 Details = new DetailView()
