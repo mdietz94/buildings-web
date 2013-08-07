@@ -1,6 +1,7 @@
 body
 	font-family: Roboto, Arial, serif
 	font-weight: 400
+	background-color: #ddd
 #header
 	position: absolute
 	left: 0px
@@ -91,7 +92,7 @@ body
 	bottom: 0px
 	display: none
 	z-index: 1
-	background-color: rgba(255,255,255,0.3)
+	background-color: #fff
 	text-align: justify
 	padding: 10px
 	box-shadow: -2px 0px 5px black
@@ -247,43 +248,22 @@ body
 .building-element
 	padding: 0
 	margin: 0
-	background-color: #ddd
+	background-color: #fff
 	width: 200px
-	height: 200px
 	overflow: hidden
 	margin-bottom: 5px
+	border-radius: 3px
+	box-shadow: 0 1px 3px 0 rgba(0,0,0,0.33)
 	img
 		width: inherit
-		height: inherit
-		z-index: 1
 	.name
-		display: none
-		position: relative
-		top: -100px
-		z-index: 2
-	&:hover .name
-		display: block
+		min-height: 50px
+		border-top: 1px solid #e7e7e7
+		text-align: center
 	&:hover img
 		opacity: .3
-/* Here are some modifiers for various alternate sizes. */
 .large
 	width: 400px
-	height: 400px
-.wide
-	width: 400px
-.tall
-	height: 400px
-/* width is set over so that we ensure complete coverage and allow for extra room for parallax. */
-#bg
-	position: fixed
-	background-attachment: fixed
-	background-repeat: repeat-y
-	background-size: 100% auto
-	top: 0
-	left: 0
-	right: 0
-	bottom: 0
-	opacity: .3
 #galleria
 	position: relative
 	right: 5px
