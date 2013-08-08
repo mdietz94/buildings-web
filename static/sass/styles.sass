@@ -217,8 +217,28 @@ body
 	margin-bottom: 5px
 	border-radius: 3px
 	box-shadow: 0 1px 3px 0 rgba(0,0,0,0.33)
+	&:hover .add
+		display: block
+	.add
+		display: none
+		font-family: 'Titan One'
+		color: black
+		position: absolute
+		right: 5px
+		cursor: pointer
+		background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ffffff), color-stop(100%, #f0f0f0))
+		margin: 2px
+		text-align: center
+		width: 20px
+		height: 20px
+		line-height: 20px
+		border-radius: 2px
+		border: 1px solid rgba(0,0,0,0.3)
+		&:active
+			box-shadow: 0px 1px 4px 0 rgba(0,0,0,0.4) inset
 	img
 		width: inherit
+		cursor: pointer
 	.name
 		font-family: 'Kite One'
 		min-height: 50px
@@ -232,8 +252,6 @@ body
 		font-size: 14px
 		color: #888
 		height: 20px
-	&:hover img
-		opacity: .3
 .large
 	width: 400px
 #galleria
