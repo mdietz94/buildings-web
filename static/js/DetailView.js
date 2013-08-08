@@ -35,7 +35,7 @@ DetailView.prototype.load = function(id){
 			$("#building-detail").html(content)
 			$('input[type="file"]').remove()
 			$('.dropzone').remove()
-			$('body').append($('<form>').addClass("dropzone").attr('action',"/images/" + bldg.id).attr('method', 'POST').dropzone({url: "/images/" + bldg.id}))
+			$('body').append($('<form>').addClass("dropzone").attr('action',"/images/" + bldg.id).attr('method', 'POST').dropzone({url: "/images/" + bldg.id, dictDefaultMessage: 'Drop images (or click) here'}))
 			setTimeout(function(){$(".dropzone").css('left', '10%')}, 500)
 			$("#close").on('click', function(){
 				_ctx.unload()
