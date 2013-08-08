@@ -16,4 +16,5 @@ function initialize(){
 		//scollProperty: 'transform', // for iOS support
 		responsive: true // refresh parallax on window resize
 	})
+	$("#about-btn").click()
 }
