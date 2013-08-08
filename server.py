@@ -28,12 +28,13 @@ def alt_index():
 def add_image(uid):
     if current_user.get_access() == 0:
         return abort(401)
-    img_num = [ x for x in os.listdir('./static/images') if x.startswith('bldg{0}x'.format(uid))]
+    img_num = [ x for x in os.listdir('.\static\images') if x.startswith('bldg{0}x'.format(uid))]
     img_num = len(img_num)
-    target = os.path.join('./static/images', 'bldg{0}x{1}.jpg'.format(uid,img_num))
+    target = os.path.join('.\static\images', 'bldg{0}x{1}.jpg'.format(uid,img_num))
+    print(target)
     try:
-        if request.files['data'].filename.rsplit('.',1)[1].upper() == 'JPG':
-            request.files['data'].save(target)
+        if request.files['file'].filename.rsplit('.',1)[1].upper() == 'JPG':
+            request.files['file'].save(target)
         else:
             return abort(415)
     except Exception as e:
