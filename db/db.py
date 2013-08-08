@@ -23,10 +23,6 @@ def get_buildings_from_cursor(res, full=True):
             ret.append(build_stub_building_obj(result))
     return ret
 
-def get_all_buildings(conn):
-    c = conn.cursor()
-    return get_buildings_from_cursor(c.execute("select * from buildings"), False)
-
 def get_max_id(conn): # since we start at 0, we can use this to search for potential pictures when that's all we want
     c = conn.cursor()
     return { 'id': c.execute('select max(_id) from buildings').fetchone()[0] }
