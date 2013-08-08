@@ -208,49 +208,6 @@ body
 		display: inline
 		float: left
 		cursor: pointer
-#info-pane
-	position: fixed
-	top: 105px
-	left: 30px
-	width: 20%
-	z-index: 10
-	padding: 10px
-	background-color: #fff
-	box-shadow: 0 2px 6px rgba(0,0,0,0.3),0 -3px 8px rgba(0,0,0,0.2)
-	height: 100px
-	-webkit-backface-visibility: hidden
-	-moz-backface-visibility: hidden
-	-ms-backface-visibility: hidden
-	-o-backface-visibility: hidden
-	backface-visibility: hidden
-	-webkit-animation-duration: 1s
-	-webkit-animation-delay: .2s
-	-webkit-animation-timing-function: ease
-	-webkit-animation-fill-mode: both
-	-moz-animation-duration: 1s
-	-moz-animation-delay: .2s
-	-moz-animation-timing-function: ease
-	-moz-animation-fill-mode: both
-	-ms-animation-duration: 1s
-	-ms-animation-delay: .2s
-	-ms-animation-timing-function: ease
-	-ms-animation-fill-mode: both
-	-o-animation-duration: 1s
-	-o-animation-delay: .2s
-	-o-animation-timing-function: ease
-	-o-animation-fill-mode: both
-	animation-duration: 1s
-	animation-delay: .2s
-	animation-timing-function: ease
-	animation-fill-mode: both
-	&:hover
-		background-color: rgba(255,255,255,0.5)
-	.info-name
-		text-align: center
-		font-weight: 500
-	&:not(.flipInX)
-		opacity: 0
-
 .building-element
 	padding: 0
 	margin: 0
@@ -268,7 +225,13 @@ body
 		max-height: 75px
 		border-top: 1px solid #e7e7e7
 		text-align: center
-		text-overflow: ellipsis
+		overflow: hidden
+	.distance
+		border-top: 1px solid #e7e7e7
+		padding: 2px
+		font-size: 14px
+		color: #888
+		height: 20px
 	&:hover img
 		opacity: .3
 .large
@@ -367,17 +330,51 @@ body
 					margin-top: 15px
 .dropzone
 	cursor: pointer
+	position: fixed
+	top: 40%
+	left: -350px
 	width: 300px
 	height: 200px
-	margin-top: 50px
+	overflow: hidden
 	background-color: rgba(255,255,255,0.7)
 	padding: 5px
 	box-shadow: 0px 0px 5px rgba(0,0,0,0.1)
-	margin-left: auto
-	margin-right: auto
 	font-family: 'Kite One'
 	line-height: 200px
 	text-align: center
+	transition: left 1s
 	div
-		background-color: rgba(100,100,100,.2)
+		background-color: #ddd
 		border-radius: 5px
+	div.dz-preview
+		display: hidden
+#about
+	position: fixed
+	top: 110% /* 50px when visible */
+	z-index: 11
+	background-color: #fff
+	color: #444
+	bottom: 0px
+	padding: 100px
+	text-align: justify
+	line-height: 30px
+	transition: top 1s
+	img
+		float: left
+		position: absolute
+		top: 0px
+		left: 0px
+		width: 40px
+		padding: 5px
+		cursor: pointer
+	h1
+		border-bottom: 1px solid black
+#header #about-btn
+	color: white
+	margin-left: 10px
+	font-weight: 300
+	top: 0px
+	position: absolute
+	height: 30px
+	line-height: 30px
+	cursor: pointer

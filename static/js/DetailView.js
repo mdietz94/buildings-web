@@ -7,7 +7,6 @@ DetailView.prototype.load = function(id){
 		this.id = id
 		// in case we are using a placeholder image
 		var src = $("#" + id + ' img').attr('src')
-		$('#bg').css('background-image', 'url(' + src + ')')
 		$("#building-detail").show()
 		$(this).trigger('show')
 		var bldg = new Building(id)
@@ -17,7 +16,6 @@ DetailView.prototype.load = function(id){
 		})
 		_ctx = this
 		$(document).one('ajaxStop', function(){
-			$("input[type='file']").remove()
 			content = "<img id='close' src='/static/images/close.png' />"
 				+ "<div class='detail-id' style='display:none;'>" + bldg.id + "</div>"
 				+ "<div class='detail-name'>" + bldg.name + "</div>"
@@ -34,9 +32,11 @@ DetailView.prototype.load = function(id){
 			content += "<img src='http://maps.googleapis.com/maps/api/streetview?size=600x300&location=" + bldg.latitude
 				+ "," + bldg.longitude + "&sensor=false' alt='Google StreetView'></div>"
 				+ "</div>"
-				+ "<form action='/images/" + bldg.id + "' method='POST' class='dropzone'></form>"
-				$("#building-detail").html(content)
-				$(".dropzone").dropzone({ url: '/images/' + bldg.id})
+			$("#building-detail").html(content)
+			$('input[type="file"]').remove()
+			$('.dropzone').remove()
+			$('body').append($('<form>').addClass("dropzone").attr('action',"/images/" + bldg.id).attr('method', 'POST').dropzone({url: "/images/" + bldg.id}))
+			setTimeout(function(){$(".dropzone").css('left', '10%')}, 500)
 			$("#close").on('click', function(){
 				_ctx.unload()
 			})
@@ -64,6 +64,7 @@ DetailView.prototype.load = function(id){
 DetailView.prototype.unload = function(){
 	$(this).trigger('hide')
 	$("#building-detail").hide()
+	$(".dropzone").remove()
 }
 
 Details = new DetailView()

@@ -11,6 +11,7 @@ function initialize(){
 	grid = new BuildingGrid()
 	login = new Login()
 	register = new Register()
+	about = new About()
 	$.stellar({
 		//scollProperty: 'transform', // for iOS support
 		responsive: true // refresh parallax on window resize
