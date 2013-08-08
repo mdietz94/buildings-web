@@ -106,15 +106,25 @@ addBuilding = function(e){
 	} else if (loc.length > 0){
 		state = loc[0].trim()
 	}
-	$.post("/add", {
-		'architect': architect,
-		'description': description,
-		'date': date,
-		'name': name,
-		'state': state,
-		'city': city,
-		'address': address
-	}).always(function(e){console.log(e)})
+	geocoder = new google.maps.Geocoder();
+	geocoder.geocode( { 'address': $("#building-detail .detail-location").text() }, function(results, status) {
+		if (status == google.maps.GeocoderStatus.OK) {
+			latitude = results[0].geometry.location.latitude
+				$.post("/add", {
+					'architect': architect,
+					'description': description,
+					'date': date,
+					'name': name,
+					'state': state,
+					'city': city,
+					'address': address,
+					'latitude': results[0].geometry.location.lat(),
+					'longitude': results[0].geometry.longitude.lng()
+				}).always(function(e){console.log(e)})
+		} else {
+			alert("Geocode was not successful for the following reason: " + status);
+		}
+	})
 	makeStatic('name')
 	makeStatic('architect')
 	makeStatic('date')
