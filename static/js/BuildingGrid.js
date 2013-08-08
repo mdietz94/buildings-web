@@ -35,7 +35,8 @@ BuildingGrid.prototype.reload = function(e){
 				$.get('/static/images/bldg' + bldg['id'] + 'x0.jpg').done(function(){
 					var $img = $('<img>').attr('src', '/static/images/bldg' + bldg.id + 'x0.jpg')
 					var $name = $('<div>').addClass('name').text(bldg.name)
-					var $el = $('<div>').attr('id', bldg.id).addClass('building-element').append($img).append($name)
+					var $dist = $('<div>').addClass('distance').text(bldg.distance + " mi.")
+					var $el = $('<div>').attr('id', bldg.id).addClass('building-element').append($img).append($name).append($dist)
 					$el.on('click', function(){
 						Details.load(bldg.id)
 					})
@@ -51,7 +52,8 @@ BuildingGrid.prototype.reload = function(e){
 				}).fail(function(){
 					var $img = $('<img>').attr('src', '/static/images/bldg0x0.jpg')
 					var $name = $('<div>').addClass('name').text(bldg.name)
-					var $el = $('<div>').attr('id', bldg.id).addClass('building-element').append($img).append($name)
+					var $dist = $('<div>').addClass('distance').text(bldg.distance + " mi.")
+					var $el = $('<div>').attr('id', bldg.id).addClass('building-element').append($img).append($name).append($dist)
 					$el.on('click', function(){
 						Details.load(bldg.id)
 					})

@@ -2,10 +2,23 @@ function Building(_id){
 	this.id = _id
 }
 
-function Building(_id, name, architect){
+function Building(_id, name, architect, latitude, longitude){
 	this.id = _id
 	this.name = name
 	this.architect = architect
+	this.latitude = latitude
+	this.longitude = longitude
+
+	var lat1 = this.latitude * (Math.PI / 180)
+	var lon1 = this.longitude * (Math.PI / 180)
+	var lat2 = window.latitude * (Math.PI / 180)
+	var lon2 = window.longitude * (Math.PI / 180)
+	this.distance = 'Some'
+	if (lat2 != null) { // we can assume that either both or neither will be null
+		var x = (lon2 - lon1) * Math.cos((lat2 + lat1)/2)
+		var y = lat2 - lat1
+		this.distance = (Math.sqrt(x*x + y*y) * 3959).toFixed(1) // for miles, in KM it would be 6371
+	}
 }
 Building.prototype.load = function(){
 	bldg = this
@@ -28,8 +41,8 @@ Building.prototype.load = function(){
 		bldg.keywords = response['keywords']
 		var lat1 = bldg.latitude * (Math.PI / 180)
 		var lon1 = bldg.longitude * (Math.PI / 180)
-		var lat2 = LocationServices.latitude * (Math.PI / 180)
-		var lon2 = LocationServices.longitude * (Math.PI / 180)
+		var lat2 = window.latitude * (Math.PI / 180)
+		var lon2 = window.longitude * (Math.PI / 180)
 		if (lat2 != null) { // we can assume that either both or neither will be null
 			var x = (lon2 - lon1) * Math.cos((lat2 + lat1)/2)
 			var y = lat2 - lat1

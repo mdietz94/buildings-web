@@ -19,7 +19,7 @@ BuildingCollection.prototype.reset = function(newCollection){
 	this.buildings = []
 	for (var i = 0; i < newCollection.length; i++){
 		bldgData = newCollection[i]
-		this.buildings.push(new Building(bldgData['id'], bldgData['name'], bldgData['architect']))
+		this.buildings.push(new Building(bldgData['id'], bldgData['name'], bldgData['architect'], bldgData['latitude'], bldgData['longitude']))
 	}
 	console.log(this.buildings)
 	$(this).trigger('reset')

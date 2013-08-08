@@ -20,9 +20,8 @@ Location.prototype.refresh = function(){
 }
 
 Location.prototype.onFix = function(position){
-	_ctx.latitude = position.coords.latitude
-	_ctx.longitude = position.coords.longitude
-	$(_ctx).trigger('found')
+	window.latitude = position.coords.latitude
+	window.longitude = position.coords.longitude
 }
 
 Location.prototype.onLost = function(){
