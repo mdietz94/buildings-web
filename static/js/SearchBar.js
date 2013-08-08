@@ -1,6 +1,7 @@
 function SearchBar() {
 	this.searchHistory = []
 	$("#search-bar").on('keyup', null, this, this.handleKeyPressed)
+	$("#globe").on('click', null, this, this.searchByLocation)
 }
 
 SearchBar.prototype.handleKeyPressed = function(e){
@@ -12,7 +13,12 @@ SearchBar.prototype.handleKeyPressed = function(e){
 SearchBar.prototype.search = function(terms){
 	this.searchHistory.push(terms)
 	$.getJSON("/search/" + terms, function(response){
-		console.log(response)
+		Buildings.reset(response)
+	})
+}
+
+SearchBar.prototype.searchByLocation = function(){
+	$.getJSON("/find-by-location/" + window.latitude + "/" + window.longitude, function(response){
 		Buildings.reset(response)
 	})
 }
