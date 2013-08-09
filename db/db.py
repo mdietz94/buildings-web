@@ -6,15 +6,14 @@ def connect_db():
     return sqlite3.connect('db/buildings.db')
 
 def build_stub_building_obj(row):
-    return {'id': row[0], 'name': row[1], 'architect': row[2], 'latitude': str(row[8]), 'longitude': str(row[9]) }
+    return {'id': row[0], 'name': row[1], 'architect': row[2], 'latitude': str(row[4]), 'longitude': str(row[5]) }
 
 # latitude, longitude converted to strings because the json parser
 # in android does not support getting floats
 def build_full_building_obj(conn, row):
-    c = conn.cursor()
-    country = c.execute('select name from countries where id=' + str(row[3])).fetchone()[0]
-    return {'id': row[0], 'name': row[1], 'architect': row[2], 'country': country, 'state': row[4], 'city': row[5], 'region': row[6],
-    'address': row[7], 'latitude': str(row[8]), 'longitude': str(row[9]), 'date': row[10], 'description': row[11], 'keywords': get_keywords(conn, row[0]) }
+    return {'id': row[0], 'name': row[1], 'architect': row[2],
+    'address': row[3], 'latitude': str(row[4]), 'longitude': str(row[5]),
+    'date': row[6], 'description': row[7], 'keywords': get_keywords(conn, row[0]) }
 
 def get_keywords(conn, uid):
     c = conn.cursor()
@@ -37,21 +36,37 @@ def get_max_id(conn): # since we start at 0, we can use this to search for poten
     c = conn.cursor()
     return { 'id': c.execute('select max(_id) from buildings').fetchone()[0] }
 
-def get_buildings_by_name(conn, name):
-    c = conn.cursor()
-    return get_buildings_from_cursor(conn, c.execute("select * from buildings where upper(name) like '%" + name.upper()  + "%' order by length(description)  desc limit 50" ), False)
-
 def search(conn, terms):
     c = conn.cursor()
-    return get_buildings_from_cursor(conn, c.execute("select * from buildings where upper(name) like {0} or upper(architect) like {0} or upper(state) like {0} or upper(city) like {0} or upper(date) like {0} order by length(description)  desc limit 50".format(json.dumps('%' + terms.upper() + '%')) ), False)
+    terms = terms.split()
+    ids = []
+    for row in c.execute("select building_id from keyword_map join keywords on keyword_map.keyword_id=keywords.id where upper(keywords.name) like {0}".format(json.dumps('%' + terms[0].upper() + '%'))):
+        ids.append(row[0])
+    for row in c.execute("select _id from building_info where upper(name) like {0} or upper(architect) like {0} or upper(address) like {0} or upper(date) like {0}".format(json.dumps('%' + terms[0].upper() + '%'))):
+        ids.append(row[0])
+    for term in terms[1:]:
+        row_ids = []
+        for row in c.execute("select building_id from keyword_map join keywords on keyword_map.keyword_id=keywords.id where upper(keywords.name) like {0}".format(json.dumps('%' + term.upper() + '%'))):
+            row_ids.append(row[0])
+        for row in c.execute("select _id from building_info where upper(name) like {0} or upper(architect) like {0} or upper(address) like {0} or upper(date) like {0}".format(json.dumps('%' + term.upper() + '%'))):
+            row_ids.append(row[0])
+        ids = [val for val in ids if val in row_ids]
+    if len(ids) > 0:
+        cmd = "select * from building_info where "
+        for uid in ids:
+            cmd += "_id=" + json.dumps(uid) + " or "
+        return get_buildings_from_cursor(conn,c.execute(cmd[:-3]), False)
+    else:
+        return []
+
 
 def get_building_by_id(conn, id):
     c = conn.cursor()
-    return build_full_building_obj(conn, c.execute("select * from buildings where _id=" + json.dumps(id)).fetchone())
+    return build_full_building_obj(conn, c.execute("select * from building_info where _id=" + json.dumps(id)).fetchone())
 
 def get_closest_buildings(conn, latitude, longitude):
     c = conn.cursor()
-    req = "select * from buildings where (latitude != 0 or longitude != 0) order by ((latitude-{0})*(latitude-{0}) + (longitude-{1}) * (longitude-{1})) asc limit 50"
+    req = "select * from building_info where (latitude != 0 or longitude != 0) order by ((latitude-{0})*(latitude-{0}) + (longitude-{1}) * (longitude-{1})) asc limit 50"
     return get_buildings_from_cursor(conn, c.execute(req.format(json.dumps(latitude), json.dumps(longitude))))
 
 def check_login(conn, username, password):
