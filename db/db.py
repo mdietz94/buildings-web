@@ -6,7 +6,7 @@ def connect_db():
     return sqlite3.connect('db/buildings.db')
 
 def build_stub_building_obj(row):
-    return {'id': row[0], 'name': row[1], 'architect': row[2], 'latitude': str(row[4]), 'longitude': str(row[5]) }
+    return {'id': row[0], 'name': row[1], 'architect': row[2], 'address': row[3], 'latitude': str(row[4]), 'longitude': str(row[5]) }
 
 # latitude, longitude converted to strings because the json parser
 # in android does not support getting floats
@@ -79,17 +79,41 @@ def check_login(conn, username, password):
         return { 'id': row[0], 'username': row[1], 'password': row[2] }
     return None
 
-def update_building(conn, architect, description, name, date, id):
+def update_building(conn, architect, description, date, id, user_id):
     c = conn.cursor()
-    req = "update buildings set architect={0},description={1},name={2},date={3} where _id={4}"
-    c.execute(req.format(json.dumps(architect), json.dumps(description), json.dumps(name), json.dumps(date),json.dumps(id)))
+    data = c.execute("select * from building_info where _id=" + json.dumps(id)).fetchone()
+    currData = [json.dumps(x) for x in data]
+    currRev = c.execute("select current_rev from buildings where _id=" + json.dumps(id)).fetchone()[0]
+    if architect:
+        currData[2] = json.dumps(architect)
+    if description:
+        currData[7] = json.dumps(description)
+    if date:
+        currData[6] = json.dumps(date)
+    c.execute("insert into data (last_rev,architect,address,latitude,longitude,date,description,edit_author) values ("
+        + json.dumps(currRev) + "," + currData[2] + "," + currData[3] + "," + currData[4] + "," + currData[5] + "," + currData[6]
+        + "," + currData[7] + "," + json.dumps(user_id)
+        + ")")
+    c.execute("update buildings set current_rev=" + str(c.lastrowid) + " where _id=" + json.dumps(id))
     conn.commit()
 
-def add_building(conn, name, architect, state, city, region, address, latitude, longitude, date, description, keywords):
+def add_building(conn, name, architect, address, latitude, longitude, date, description, keywords):
     c = conn.cursor()
-    req = "insert into buildings (name, architect, country, state, city, region, address, latitude, longitude, date, description, keywords) values ({0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11})"
-    keywords = ";".join(keywords.split()) # any whitespace should just be made into separate tags
-    c.execute(req.format(json.dumps(name),json.dumps(architect),json.dumps('United States'),json.dumps(state),json.dumps(city),json.dumps(region),json.dumps(address),json.dumps(latitude),json.dumps(longitude),json.dumps(date),json.dumps(description),json.dumps(keywords)))
+    c.execute('insert into data (last_rev,architect,address,latitude,longitude,date,description) values (' +
+        currRev + "," + json.dumps(architect) + "," + json.dumps(address) + "," + json.dumps(latitude) +
+        json.dumps(longitude) + json.dumps(date) + json.dumps(description))
+    c.execute("insert into buildings (current_rev, name) values ({0},{1})".format(c.lastrowid, name))
+    building_id = c.lastrowid
+    keywords = keywords.split() # any whitespace should just be made into separate tags
+    keyword_ids = []
+    for key in keywords:
+        res = c.execute('select _id in keywords where name=' + json.dumps(key))
+        if res:
+            keyword_ids = res.fetchone()[0]
+        else:
+            c.execute('insert into keywords (name) values (' + json.dumps(key) + ')')
+            c.execute('insert into keyword_map (building_id,keyword_id) values ('
+                + str(building_id) + ',' + str(c.lastrowid) + ')')
     conn.commit()
 
 def delete_building(conn, uid):

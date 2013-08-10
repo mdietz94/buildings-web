@@ -9,18 +9,18 @@ DetailView.prototype.load = function(id){
 		var src = $("#" + id + ' img').attr('src')
 		$("#building-detail").show()
 		$(this).trigger('show')
-		var bldg = new Building(id)
+		var bldg = new Building({'id': id})
 		bldg.load()
 		$.getJSON("/num_images/" + id, function(r){
 			bldg.numImages = r['images']
 		})
-		_ctx = this
+		var _ctx = this
 		$(document).one('ajaxStop', function(){
 			content = "<img id='close' src='/static/images/close.png' />"
 				+ "<div class='detail-id' style='display:none;'>" + bldg.id + "</div>"
 				+ "<div class='detail-name'>" + bldg.name + "</div>"
 				+ "<div class='detail-architect'>" + bldg.architect + "</div>"
-				+ "<div class='detail-location'>" + bldg.city + ", " + bldg.state + "</div>"
+				+ "<div class='detail-location'>" + bldg.address + "</div>"
 				+ "<span class='detail-date'>" + bldg.date + "</span>"
 				+ "<div class='detail-map'><img src='http://maps.googleapis.com/maps/api/staticmap?markers=size:mid%7Ccolor:red%7C"
 				+ bldg.latitude + "," + bldg.longitude + "&zoom=13&size=200x200&sensor=false&visual_refresh=true' alt='Google Maps'></div>"

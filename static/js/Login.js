@@ -53,8 +53,7 @@ Login.prototype.saveChanges = function(e){
 	if (architect == "Architect Unknown")
 		architect = ''
 	id = $("#building-detail .detail-id").text()
-	name = $("#building-detail .detail-name").text()
-	$.post("/edit", { 'architect': architect, 'description': description, 'date': date, 'id': id, 'name': name }).always(function(e){console.log(e)})
+	$.post("/edit", { 'architect': architect, 'description': description, 'date': date, 'id': id }).always(function(e){console.log(e)})
 
 	makeStatic('architect')
 	makeStatic('date')
@@ -76,7 +75,7 @@ Login.prototype.saveChanges = function(e){
 }
 
 makeStatic = function(name) {
-	$("#building-detail .detail-" + name).attr('contentEditable','')
+	$("#building-detail .detail-" + name).attr('contentEditable','false')
 	$("#building-detail .detail-" + name).removeClass('editable')
 }
 
@@ -88,35 +87,15 @@ makeEditable = function(name) {
 addBuilding = function(e){
 	$("#add").html("Add")
 	$("#edit").show()
-	name = $("#building-detail .detail-name").text()
-	architect = $("#building-detail .detail-architect").text()
-	date = $("#building-detail .detail-date").text()
-	description = $("#building-detail .detail-description").text()
-	loc = $("#building-detail .detail-location").text().split(",")
-	state = null
-	city = null 
-	address = null
-	if (loc.length > 2){
-		address = loc[0].trim()
-		city = loc[1].trim()
-		state = loc[2].trim()
-	} else if (loc.length > 1){
-		city = loc[0].trim()
-		state = loc[1].trim()
-	} else if (loc.length > 0){
-		state = loc[0].trim()
-	}
 	geocoder = new google.maps.Geocoder();
 	geocoder.geocode( { 'address': $("#building-detail .detail-location").text() }, function(results, status) {
 		if (status == google.maps.GeocoderStatus.OK) {
 			$.post("/add", {
-				'architect': architect,
-				'description': description,
-				'date': date,
-				'name': name,
-				'state': state,
-				'city': city,
-				'address': address,
+				'architect': $("#building-detail .detail-architect").text(),
+				'description': $("#building-detail .detail-description").text(),
+				'date': $("#building-detail .detail-date").text(),
+				'name': $("#building-detail .detail-name").text(),
+				'address': $("#building-detail .detail-location").text(),
 				'latitude': results[0].geometry.location.lat(),
 				'longitude': results[0].geometry.location.lng()
 			}).always(function(e){console.log(e)})
@@ -132,7 +111,7 @@ addBuilding = function(e){
 }
 
 Login.prototype.refresh = function(){
-	_ctx = this
+	var _ctx = this
 	$.getJSON("/username", function(response){
 		username = response['username']
 		if (username){

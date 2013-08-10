@@ -1,13 +1,10 @@
-function Building(_id){
-	this.id = _id
-}
-
-function Building(_id, name, architect, latitude, longitude){
-	this.id = _id
-	this.name = name
-	this.architect = architect
-	this.latitude = latitude
-	this.longitude = longitude
+function Building(opts){
+	this.id = opts.id
+	this.name = opts.name
+	this.architect = opts.architect
+	this.address = opts.address
+	this.latitude = opts.latitude
+	this.longitude = opts.longitude
 
 	var lat1 = this.latitude * (Math.PI / 180)
 	var lon1 = this.longitude * (Math.PI / 180)
@@ -29,10 +26,6 @@ Building.prototype.load = function(){
 		if (bldg.architect == null){
 			bldg.architect = "Architect Unknown"
 		}
-		bldg.country = response['country']
-		bldg.state = response['state']
-		bldg.city = response['city']
-		bldg.region = response['region']
 		bldg.address = response['address']
 		bldg.latitude = response['latitude']
 		bldg.longitude = response['longitude']
