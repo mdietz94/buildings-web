@@ -123,7 +123,14 @@ def toggle_favorite(conn, uid, user_id):
     if c.execute('select count(*) from favorites where b_id={0} and user_id={1}'.format(uid,user_id)).fetchone()[0] > 0: # we need to remove it
         c.execute('delete from favorites where b_id={0} and user_id={1}'.format(uid,user_id))
     else:
-        c.execute('insert into favorites (b_id,user_id) values ({0},{1}'.format(uid,user_id))
+        c.execute('insert into favorites (b_id,user_id) values ({0},{1})'.format(uid,user_id))
+    conn.commit()
+
+def get_favorites(conn, user_id):
+    c = conn.cursor()
+    user_id = json.dumps(user_id)
+    res = c.execute('select b_id from favorites where user_id=' + user_id)
+    return [row[0] for row in res]
 
 
 def delete_building(conn, uid):

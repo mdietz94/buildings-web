@@ -1,5 +1,7 @@
 function BuildingCollection(){
 	this.buildings = []
+	this.favorites = []
+	this.get_favorites()
 }
 
 BuildingCollection.prototype.add = function(toAdd){
@@ -35,6 +37,17 @@ BuildingCollection.prototype.get = function(id){
 	if (ret)
 		return ret[0]
 	return null
+}
+
+BuildingCollection.prototype.get_favorites = function(){
+	var _ctx = this
+	$.getJSON("/favorites", function(response){
+		this.favorites = response
+		$(".add").removeClass('selected')
+		for (var i = 0; i < this.favorites.length; i++){
+			$("#" + this.favorites[i] + ' .add').addClass('selected')
+		}
+	})
 }
 
 Buildings = new BuildingCollection()

@@ -107,6 +107,9 @@ def add_favorite(id):
     db.toggle_favorite(g.db,id,current_user.get_id())
     return simplejson.dumps({'message': 'OK'})
 
+@app.route("/favorites")
+def get_favorites():
+    return simplejson.dumps(db.get_favorites(g.db, current_user.get_id()))
 
 @app.route("/edit", methods=['POST'])
 @login_required

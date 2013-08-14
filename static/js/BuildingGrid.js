@@ -33,9 +33,11 @@ BuildingGrid.prototype.reload = function(e){
 			(function(bldg){
 				var isLarge = Math.random() < 0.2
 				$.get('/static/images/bldg' + bldg['id'] + 'x0.jpg').done(function(){
-					var $add = $('<div>').addClass('add').html('&#43;').on('click', function(){
+					var $add = $('<div>').addClass('add').html('&#43;').on('click', function(e){
 						$.getJSON("/favorites/" + bldg['id'])
-						$(this).toggleClass(selected)
+						Buildings.get_favorites()
+						e.stopPropagation()
+						e.preventDefault()
 					})
 					var $img = $('<img>').attr('src', '/static/images/bldg' + bldg.id + 'x0.jpg')
 					var $name = $('<div>').addClass('name').text(bldg.name)
@@ -59,9 +61,11 @@ BuildingGrid.prototype.reload = function(e){
 					})($el)
 					
 				}).fail(function(){
-					var $add = $('<div>').addClass('add').html('&#43;').on('click', function(){
+					var $add = $('<div>').addClass('add').html('&#43;').on('click', function(e){
 						$.getJSON("/favorites/" + bldg['id'])
-						$(this).toggleClass('selected')
+						Buildings.get_favorites()
+						e.stopPropagation()
+						e.preventDefault()
 					})
 					var $img = $('<img>').attr('src', '/static/images/bldg0x0.jpg')
 					var $name = $('<div>').addClass('name').text(bldg.name)
@@ -92,4 +96,5 @@ BuildingGrid.prototype.reload = function(e){
 	for (var i = 0; i < $oldEls.length; i++){
 		$("#container").masonry('remove', $oldEls[i]).masonry()
 	}
+	Buildings.get_favorites()
 }

@@ -30,6 +30,7 @@ Login.prototype.logout = function(){
 
 Login.prototype.login = function(){
 	_ctx = this
+	Buildings.get_favorites()
 	$.post('/login', { username: $("#login-form-username").val(), password: $("#login-form-password").val() }).fail(function(){
 		alert("THERE WAS A PROBLEM!")
 	}).always(function(){
