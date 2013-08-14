@@ -33,7 +33,10 @@ BuildingGrid.prototype.reload = function(e){
 			(function(bldg){
 				var isLarge = Math.random() < 0.2
 				$.get('/static/images/bldg' + bldg['id'] + 'x0.jpg').done(function(){
-					var $add = $('<div>').addClass('add').html('&#43;').on('click', function(){/* favorite it*/})
+					var $add = $('<div>').addClass('add').html('&#43;').on('click', function(){
+						$.getJSON("/favorites/" + bldg['id'])
+						$(this).toggleClass(selected)
+					})
 					var $img = $('<img>').attr('src', '/static/images/bldg' + bldg.id + 'x0.jpg')
 					var $name = $('<div>').addClass('name').text(bldg.name)
 					var $dist = $('<div>').addClass('distance')
@@ -56,7 +59,10 @@ BuildingGrid.prototype.reload = function(e){
 					})($el)
 					
 				}).fail(function(){
-					var $add = $('<div>').addClass('add').html('&#43;').on('click', function(){/* favorite it*/})
+					var $add = $('<div>').addClass('add').html('&#43;').on('click', function(){
+						$.getJSON("/favorites/" + bldg['id'])
+						$(this).toggleClass('selected')
+					})
 					var $img = $('<img>').attr('src', '/static/images/bldg0x0.jpg')
 					var $name = $('<div>').addClass('name').text(bldg.name)
 					var $dist = $('<div>').addClass('distance')

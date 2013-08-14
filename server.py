@@ -101,6 +101,13 @@ def logout():
     logout_user()
     return Response('''<p>You have been logged out!''')
 
+@app.route("/favorites/<id>")
+@login_required
+def add_favorite(id):
+    db.toggle_favorite(g.db,id,current_user.get_id())
+    return simplejson.dumps({'message': 'OK'})
+
+
 @app.route("/edit", methods=['POST'])
 @login_required
 def edit_building():
@@ -136,6 +143,20 @@ def register():
 @login_manager.user_loader
 def load_user(userid):
     return User(userid)
+
+@app.route("/users/<name>")
+def get_user(name):
+    return simplejson.dumps(db.get_account_details(g.db, name, current_user.get_id()))
+
+@app.route("/revert/<b_id>/<rev_id>")
+@login_required
+def revert(b_id, rev_id):
+    db.revert_building(g.db, b_id, rev_id, current_user.get_id())
+    return simplejson.dumps({'response': 'OK'})
+
+@app.route("/history/<b_id>")
+def history(b_id):
+    return simplejson.dumps(db.get_revisions(g.db,b_id))
 
 if __name__ == "__main__":
     app.debug = True

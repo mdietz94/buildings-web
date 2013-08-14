@@ -116,10 +116,31 @@ def add_building(conn, name, architect, address, latitude, longitude, date, desc
                 + str(building_id) + ',' + str(c.lastrowid) + ')')
     conn.commit()
 
+def toggle_favorite(conn, uid, user_id):
+    c = conn.cursor()
+    uid = json.dumps(uid)
+    user_id = json.dumps(user_id)
+    if c.execute('select count(*) from favorites where b_id={0} and user_id={1}'.format(uid,user_id)).fetchone()[0] > 0: # we need to remove it
+        c.execute('delete from favorites where b_id={0} and user_id={1}'.format(uid,user_id))
+    else:
+        c.execute('insert into favorites (b_id,user_id) values ({0},{1}'.format(uid,user_id))
+
+
 def delete_building(conn, uid):
     c = conn.cursor()
     c.execute("delete from buildings where _id={0}".format(json.dumps(uid)))
     conn.commit()
+
+def revert_buiding(conn, id, rev_id, current_user_id):
+    c = conn.cursor()
+    data = c.execute("select * from data where _id=" + json.dumps(rev_id)).fetchone()
+    currRev = c.execute("select current_rev from buildings where _id=" + json.dumps(id)).fetchone()[0]
+    c.execute('insert into data (last_rev,architect, address, latitude, longitude, date, description, edit_author) values ('
+        + json.dumps(currRev) + ',' + json.dumps(data[2]) + ',' + json.dumps(data[3]) + ',' + json.dumps(data[4]) + ','
+        + json.dumps(data[5]) + ',' + json.dumps(data[6]) + ',' + json.dumps(data[7]) + ',' + json.dumps(current_user_id) + ')')
+    c.execute("update buildings set current_rev=" + str(c.lastrowid) + " where _id=" + json.dumps(id))
+    conn.commit()
+
 
 def get_info(conn, uid):
     c = conn.cursor()
@@ -142,3 +163,21 @@ def delete_user(conn, uid):
     c = conn.cursor()
     c.execute("delete from users where id={0}".format(json.dumps(uid)))
     conn.commit()
+
+def get_account_details(conn, username, curr_user_id):
+    c = conn.cursor()
+    res = c.execute('select * from users where username=' + json.dumps(username)).fetchone()
+    if res[0] == curr_user_id:
+        return { 'id': res[0], 'username': res[1], 'access_level': res[3], 'number_edits': res[4], 'email': res[5], 'real_name': res[6] }
+    else:
+        return { 'id': res[0], 'username': res[1], 'access_level': res[3], 'number_edits': res[4], 'real_name': res[6] }
+
+def get_revisions(conn, b_id):
+    c = conn.cursor()
+    currRev = c.execute('select current_rev from buildings where _id=' + json.dumps(b_id)).fetchone()[0]
+    ret = []
+    while currRev != None:
+        row = c.execute('select _id,last_rev from data where _id=' + json.dumps(currRev)).fetchone()
+        ret.append(row[0])
+        currRev = row[1]
+    return ret
